@@ -1,0 +1,37 @@
+{
+  "name": "@michaelyinopen/scheduler-server",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env index.ts",
+    "watch": "node --watch --env-file-if-exists=.env index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "author": "michaelyinopen",
+  "license": "MIT",
+  "workspaces": [
+    "../common"
+  ],
+  "description": "",
+  "dependencies": {
+    "better-sqlite3": "12.4.1",
+    "better-sqlite3-session-store": "0.1.0",
+    "cron": "4.3.5",
+    "express": "5.1.0",
+    "express-session": "1.18.2",
+    "ws": "8.18.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.38.0",
+    "@types/better-sqlite3": "7.6.13",
+    "@types/express": "5.0.5",
+    "@types/express-session": "1.18.2",
+    "@types/node": "24.9.2",
+    "@types/ws": "8.18.1",
+    "eslint": "9.38.0",
+    "globals": "16.4.0",
+    "typescript-eslint": "8.46.2"
+  }
+}

@@ -1,0 +1,20 @@
+import { type ElementId, type JobValue, type ValueElement } from '@michaelyinopen/scheduler-common'
+import { useAppStore } from '../store'
+import classes from './Procedure.module.css'
+
+export type ProcedureJobLabelProps = {
+  jobId: ElementId
+  procedureId: ElementId
+}
+
+export const ProcedureJobLabel = ({ jobId }: ProcedureJobLabelProps) => {
+  const jobTitle = useAppStore(state => {
+    const job = (state.replicationState?.crdt.jobs?.elements[jobId] as ValueElement<JobValue> | undefined)?.value
+    return job?.title?.value
+  })
+  return (
+    <div className={classes.procedureJobLabel}>
+      {jobTitle}
+    </div>
+  )
+}

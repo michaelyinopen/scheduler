@@ -1,0 +1,12 @@
+.status-banner {
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  top: 8px;
+  right: 16px;
+  background-color: var(--color-gray-100);
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 1;
+  filter: opacity(80%)
+}

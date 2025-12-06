@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="800px" height="800px"><svg width="800px" height="800px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="10" width="15" height="12" rx="2" stroke="#54555d" stroke-width="1px" fill="#4363d8"></rect>
+  <path d="M6 10.5 h 6 l -4 11 h -2 a 1.5 1.5, 0, 0, 1, -1.5 -1.5 v -8 a 1.5 1.5, 0, 0, 1, 1.5 -1.5" fill="#ecedf0"></path>
+  <rect x="20" y="10" width="20" height="12" rx="2" stroke="#54555d" fill="#ffe119"></rect>
+  <path d="M22 10.5 h 6 l -4 11 h -2 a 1.5 1.5, 0, 0, 1, -1.5 -1.5 v -8 a 1.5 1.5, 0, 0, 1, 1.5 -1.5" fill="#ecedf0"></path>
+  <rect x="4" y="26" width="40" height="12" rx="2" stroke="#54555d" fill="#3cb44b"></rect>
+  <path d="M6 26.5 h 6 l -4 11 h -2 a 1.5 1.5, 0, 0, 1, -1.5 -1.5 v -8 a 1.5 1.5, 0, 0, 1, 1.5 -1.5" fill="#ecedf0"></path>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>

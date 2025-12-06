@@ -1,0 +1,133 @@
+.job-progress-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: none;
+  transition: stroke 0.4s ease-in-out;
+  stroke: var(--color-gray-600);
+}
+
+.job-progress-icon.job-progress-icon--completed {
+  stroke: #22A06B;
+}
+
+.option-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: var(--color-gray-600);
+}
+
+/*
+To vertically align the icon
+*/
+.line-height-box {
+  display: flex;
+  height: 1.15em;
+  /* line height */
+  align-items: center;
+}
+
+.job-option-detail {
+  margin-top: 0.75rem;
+}
+
+.job-progress-sector {
+  transition: stroke-dasharray 0.4s linear;
+}
+
+.job-progress-check-mark {
+  stroke: #ecedf0;
+  stroke-width: 24px;
+  transition: 0.4s stroke-dashoffset ease-out 0.4s;
+}
+
+.job-progress-title__job-header.job-header {
+  display: inline;
+}
+
+.job-progress-title__job-header .job-title {
+  display: inline;
+}
+
+.job-progress-title__icon {
+  vertical-align: bottom;
+}
+
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+}
+
+.job-title {
+  display: inline-block;
+  padding: 0 0.25rem;
+  margin: 0 2px;
+  border-radius: 4px;
+}
+
+.job-header--inline.job-header {
+  display: inline;
+}
+
+.job-header--inline .job-title {
+  display: inline;
+}
+
+.job-title--inline {
+  display: inline;
+}
+
+.job-progress-procedures.job-progress-procedures {
+  display: grid;
+  grid-template-columns: [sequence-start] auto [sequence-end status-start] auto [status-end remarks-start] 1fr [remarks-end];
+  grid-auto-rows: auto;
+  gap: 0.25rem 4px;
+  margin-top: 0.75rem;
+}
+
+.job-progress-procedures-item {
+  grid-column: sequence-start / remark-end;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: start;
+}
+
+.job-progress-procedures-item:not(:last-child) {
+  border-style: solid;
+  border-color: var(--color-gray-400);
+  border-width: 0 0 1px 0;
+  padding-bottom: 0.25rem;
+}
+
+.job-progress-procedure {
+  grid-column: sequence-start / remark-end;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: start;
+}
+
+.job-progress-procedure-sequence {
+  grid-column: sequence-start / sequence-end;
+  display: flex;
+  align-items: center;
+}
+
+.job-progress-procedure-status {
+  grid-column: status-start / status-end;
+  display: flex;
+  align-items: center;
+}
+
+.job-progress-procedure-remarks {
+  grid-column: remarks-start / remarks-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100%;
+  line-height: 1.5rem;
+}
+
+.job-procedure {
+  cursor: move;
+}

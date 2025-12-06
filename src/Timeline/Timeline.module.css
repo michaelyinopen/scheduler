@@ -1,0 +1,74 @@
+.timeline {
+  width: 100%;
+  border-style: solid;
+  border-color: var(--color-gray-950);
+  border-width: 1px 0 0 0;
+  display: grid;
+  grid-template-columns: [group-axis-start] minmax(80px, auto) [group-axis-end schedule-body-start] 1fr [schedule-body-end];
+  /* --group-count css property specified by inline style */
+  grid-template-rows: [groups-start] repeat(var(--group-count), minmax(calc(1.65rem + 10px), auto)) [groups-end time-axis-start] auto [time-axis-end];
+
+  @media (max-width: 500px) {
+  grid-template-columns: [group-axis-start] minmax(50px, auto) [group-axis-end schedule-body-start] 1fr [schedule-body-end];
+  }
+}
+
+.time-axis {
+  grid-area: time-axis-start / schedule-body-start / time-axis-end / schedule-body-end;
+  position: relative;
+  margin-right: 1px;
+}
+
+.group-axis {
+  grid-area: groups-start / group-axis-start / groups-end / group-axis-end;
+  display: grid;
+  grid-template-rows: subgrid;
+  border-style: solid;
+  border-color: var(--color-gray-950);
+  border-width: 0 1px 1px 1px;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.17rem;
+
+  &:not(:last-child) {
+    border-style: solid;
+    border-color: var(--color-gray-950);
+    border-width: 0 0 1px 0;
+  }
+}
+
+.machine-header {
+  font-weight: 500;
+}
+
+.machine-header--inline {
+  display: inline;
+}
+
+.schedule-body {
+  grid-area: groups-start / schedule-body-start / groups-end / schedule-body-end;
+  display: grid;
+  position: relative;
+  grid-template-rows: subgrid;
+  border-style: solid;
+  border-color: var(--color-gray-950);
+  border-width: 0 1px 1px 0;
+  overflow: hidden;
+}
+
+.groups {
+  grid-row: groups-start / groups-end;
+  display: grid;
+  grid-template-rows: subgrid;
+}
+
+.group:not(:last-child) {
+  border-style: solid;
+  border-color: var(--color-gray-950);
+  border-width: 0 0 1px 0;
+  position: relative;
+}

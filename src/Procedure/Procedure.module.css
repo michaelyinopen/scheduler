@@ -1,0 +1,59 @@
+.procedure {
+  border: 1px solid var(--color-gray-600);
+  border-radius: 4px;
+  display: flex;
+  overflow: hidden;
+  background-clip: padding-box;
+  touch-action: none;
+  user-select: none;
+}
+
+.procedure.procedure--is-scheduled {
+  border-style: dashed;
+  filter: contrast(80%) saturate(80%) opacity(80%);
+}
+
+.procedure.procedure--is-drag-preview {
+  filter: opacity(70%);
+  cursor: move;
+}
+
+.procedure.procedure--is-drop-preview {
+  filter: opacity(70%);
+}
+
+.procedure.procedure--is-drag-item {
+  filter: opacity(40%);
+}
+
+.procedure.procedure--is-scheduled.procedure--is-drag-item {
+  filter: contrast(80%) saturate(80%) opacity(40%);
+}
+
+.procedure-machine-label {
+  padding-left: 0.25rem;
+  padding-right: 0.75rem;
+  padding-bottom: 0.5rem;
+  margin-right: -0.75rem;
+  color: var(--color-gray-900);
+  background-color: var(--color-gray-100);
+  clip-path: polygon(0% 100%, 0% 0%, 100% 0%, calc(100% - 1rem) 100%);
+}
+
+.procedure-job-label {
+  padding: 0.5rem 0.5rem 2px 0.5rem;
+  align-self: center;
+}
+
+.procedure-sequence-label {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-900);
+  background-color: var(--color-gray-300);
+  aspect-ratio: 1 / 1;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+}
