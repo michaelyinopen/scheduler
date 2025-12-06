@@ -69,7 +69,7 @@ export const Layout = ({ children }: LayoutProps) => {
           <NavigationMenu.Item className={styles.LastElement}>
             <NavigationMenu.Link
               className={styles.Trigger}
-              href='https://github.com/michaelyinopen'
+              href='https://github.com/michaelyinopen/scheduler'
               target="_blank"
             >
               GitHub

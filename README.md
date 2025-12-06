@@ -1,3 +1,10 @@
+# Scheduler
+
+A drag and drop scheduler for the job shop scheduling problem.
+
+## Live web app
+https://scheduler.michael-yin.net
+
 ## Install
 ```
 npm install
