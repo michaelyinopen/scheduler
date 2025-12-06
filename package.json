@@ -11,6 +11,8 @@
     "build-common": "npm run build-common --workspace=common",
     "watch-common": "npm run watch-common --workspace=common"
   },
+  "author": "michaelyinopen",
+  "license": "MIT",
   "workspaces": [
     "common"
   ],
