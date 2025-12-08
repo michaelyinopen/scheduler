@@ -18,6 +18,10 @@ jobs:
     - name: Checkout the repo
       uses: actions/checkout@v6.0.1
 
+    # Create a nested directory to cope with workspace
+    - name: Move the server folder
+      run: mv -R ${local_dir} ${local_dir}
+
     - name: Copy the common folder
       run: cp -R ${common_dir} ${local_dir}
 
