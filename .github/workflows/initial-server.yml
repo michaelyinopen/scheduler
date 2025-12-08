@@ -20,7 +20,7 @@ jobs:
 
     # Create a nested directory to cope with workspace
     - name: Move the server folder
-      run: mv -R ${local_dir} ${local_dir}
+      run: mv ${local_dir} ${local_dir}
 
     - name: Copy the common folder
       run: cp -R ${common_dir} ${local_dir}
