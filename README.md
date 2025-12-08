@@ -2,13 +2,15 @@
 
 A drag and drop scheduler for the job shop scheduling problem.
 
+<img src="./documentation/preview.jpg"/>
+
 ## Live web app
-https://scheduler.michael-yin.net
+<a href="https://scheduler.michael-yin.net" target="_blank">https://scheduler.michael-yin.net</a>
 
 ## Install
 ```
-npm install
 npm install --workspace=common
+npm install
 cd server
 npm install
 ```
@@ -43,7 +45,12 @@ npm run dev
 
 ## Reset mechanism
 
-The data hard resets every week. The vector clock's serverId entry (replicaId = 1) value has a sepcial meaning.
+<details>
+<summary>
+The data hard resets every week.
+</summary>
+
+The vector clock's serverId entry (replicaId = 1) value has a sepcial meaning.
 When the value increments, the CRDT data is reset to the example data, and removes all other replicaIds from the vector clock.
 Events and messages with a lower "vector clock's serverId entry (replicaId = 1)" will not have any effect on the CRDT data.
 
@@ -75,3 +82,4 @@ client
   - handle replicate
     - only respond events after checking server's replicaId
   - handle replicated
+</details>
