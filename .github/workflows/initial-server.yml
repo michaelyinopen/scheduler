@@ -10,17 +10,20 @@ jobs:
         remote_port: ${{ secrets.LINODE_PORT }}
         remote_user: ${{ secrets.LINODE_USER }}
         remote_key: ${{ secrets.LINODE_SSH_PRIVATE_KEY }}
+        local_dir: "~/custom/"
         common_dir: "common/"
-        local_dir: "server/"
+        server_dir: "server/"
         remote_dir: ${{secrets.LINODE_SERVER_DIRECTORY}}
         database_dir: ${{secrets.LINODE_DATABASE_DIRECTORY}}
     steps:            
     - name: Checkout the repo
       uses: actions/checkout@v6.0.1
-
-    # Create a nested directory to cope with workspace
-    - name: Move the server folder
-      run: mv ${local_dir} ${local_dir}
+      
+    - name: Create a directory
+      run: mkdir ${custom}
+      
+    - name: Copy the server folder
+      run: cp -R ${server_dir} ${local_dir}
 
     - name: Copy the common folder
       run: cp -R ${common_dir} ${local_dir}
