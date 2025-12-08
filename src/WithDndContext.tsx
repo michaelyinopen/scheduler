@@ -201,13 +201,8 @@ export type WithDndContextProps = {
 export const WithDndContext = ({ children }: WithDndContextProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      bypassActivationConstraint: ({ event }) => {
-        const pointerType = (event as PointerEvent).pointerType
-        return pointerType === 'mouse'
-      },
       activationConstraint: {
-        delay: 250,
-        tolerance: 5,
+        distance: 5,
       },
     }),
   )
