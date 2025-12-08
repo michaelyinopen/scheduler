@@ -24,7 +24,6 @@
     "noImplicitAny": false,
   },
   "include": [
-    "vite.config.ts",
-    "vite-end.d.ts"
+    "vite.config.ts"
   ]
 }
