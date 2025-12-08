@@ -10,7 +10,7 @@ jobs:
         remote_port: ${{ secrets.LINODE_PORT }}
         remote_user: ${{ secrets.LINODE_USER }}
         remote_key: ${{ secrets.LINODE_SSH_PRIVATE_KEY }}
-        local_dir: "~/custom/"
+        local_dir: "custom/"
         common_dir: "common/"
         server_dir: "server/"
         remote_dir: ${{secrets.LINODE_SERVER_DIRECTORY}}
