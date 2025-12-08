@@ -1,0 +1,25 @@
+name: initial copy server files to linode
+
+on: workflow_dispatch
+
+jobs:
+  copy-server-files:
+    runs-on: ubuntu-latest
+    env:
+        remote_host: ${{ secrets.LINODE_HOST }}
+        remote_port: ${{ secrets.LINODE_PORT }}
+        remote_user: ${{ secrets.LINODE_USER }}
+        remote_key: ${{ secrets.LINODE_SSH_PRIVATE_KEY }}
+        local_dir: "server/"
+        remote_dir: ${{secrets.LINODE_SERVER_DIRECTORY}}
+        database_dir: ${{secrets.LINODE_DATABASE_DIRECTORY}}
+    steps:            
+    - name: Checkout the repo
+      uses: actions/checkout@v6.0.1
+
+    - name: Upload
+      run: |
+        mkdir ~/.ssh
+        echo "$remote_key" > ~/.ssh/gh_actions_key
+        chmod 600 ~/.ssh/gh_actions_key
+        rsync -avzr --exclude=${database_dir} --exclude=/node_modules --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
