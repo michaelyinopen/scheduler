@@ -41,6 +41,7 @@ jobs:
         remote_key: ${{ secrets.LINODE_SSH_PRIVATE_KEY }}
         local_dir: "dist/"
         remote_dir: ${{secrets.LINODE_WEBSITE_DIRECTORY}}
+        NODE_ENV: production
     steps:            
     - name: Checkout the repo
       uses: actions/checkout@v6.0.1
@@ -51,7 +52,7 @@ jobs:
         node-version: 22
   
     - name: Install npm packages
-      run: npm install
+      run: npm ci --workspaces --include-workspace-root
       
     - name: Build common
       run: npm run build-common
