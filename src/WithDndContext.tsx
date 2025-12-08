@@ -202,8 +202,8 @@ export const WithDndContext = ({ children }: WithDndContextProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 25,
-        tolerance: 40,
+        delay: 250,
+        tolerance: 5,
       },
     }),
   )
