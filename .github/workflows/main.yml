@@ -1,0 +1,67 @@
+name: deploy website and api on linode
+
+on:
+    push:
+        branches: [ main ]
+
+jobs:
+#  deploy-server:
+#    runs-on: ubuntu-latest
+#    env:
+#        remote_host: ${{ secrets.LINODE_HOST }}
+#        remote_port: ${{ secrets.LINODE_PORT }}
+#        remote_user: ${{ secrets.LINODE_USER }}
+#        remote_key: ${{ secrets.LINODE_SSH_PRIVATE_KEY }}
+#        local_dir: "server/"
+#        remote_dir: ${{secrets.LINODE_SERVER_DIRECTORY}}
+#        database_dir: ${{secrets.LINODE_DATABASE_DIRECTORY}}
+#    steps:            
+#    - name: Checkout the repo
+#      uses: actions/checkout@v4.2.2
+#
+#    - name: Upload
+#      run: |
+#        mkdir ~/.ssh
+#        echo "$remote_key" > ~/.ssh/gh_actions_key
+#        chmod 600 ~/.ssh/gh_actions_key
+#        rsync -avzr --exclude=${database_dir} --exclude=/node_modules --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
+#    
+#    - name: npm install
+#      run: ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no ${remote_user}@${remote_host} "cd ${remote_dir} && npm install"
+#
+#    - name: Restart
+#      run: ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no ${remote_user}@${remote_host} 'sudo /usr/bin/systemctl restart connection-server.service'
+
+  deploy-website:
+    runs-on: ubuntu-latest
+    env:
+        remote_host: ${{ secrets.LINODE_HOST }}
+        remote_port: ${{ secrets.LINODE_PORT }}
+        remote_user: ${{ secrets.LINODE_USER }}
+        remote_key: ${{ secrets.LINODE_SSH_PRIVATE_KEY }}
+        local_dir: "dist/"
+        remote_dir: ${{secrets.LINODE_WEBSITE_DIRECTORY}}
+    steps:            
+    - name: Checkout the repo
+      uses: actions/checkout@v6.0.1
+      
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v6.1.0
+      with:
+        node-version: 22
+  
+    - name: Install npm packages
+      run: npm install
+      
+    - name: Build common
+      run: npm run build-common
+      
+    - name: Build app
+      run: npm run build
+
+    - name: Upload
+      run: |
+        mkdir ~/.ssh
+        echo "$remote_key" > ~/.ssh/gh_actions_key
+        chmod 600 ~/.ssh/gh_actions_key
+        rsync -avzr --delete -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
