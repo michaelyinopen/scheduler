@@ -74,7 +74,7 @@ export const Scale = () => {
                 />
                 {tickMarkTime.type === tickMarkType.major &&
                   <text
-                    alignmentBaseline="hanging"
+                    dominantBaseline="hanging"
                     x={xPositionPx}
                     dx="2px"
                     dy="2px"
