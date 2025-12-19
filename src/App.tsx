@@ -3,7 +3,7 @@ import { WithConnection } from './WithConnection'
 import { WithErrorBoundary } from './WithErrorBoundary'
 import { Timeline, GroupAxis, ScheduleBody, TimeAxis } from './Timeline'
 import { ErrorBoundary } from './components/ErrorBoundary'
-import { JobSet } from './JobSet'
+import { JobSet, EditModes } from './JobSet'
 import './theme.css'
 import './App.css'
 import { TitleAndDescription } from './JobSet/TitleAndDescription'
@@ -16,6 +16,7 @@ function App() {
           <WithErrorBoundary>
             <WithDndContext>
               <TitleAndDescription />
+              <EditModes />
               <JobSet />
               <Timeline>
                 <GroupAxis />

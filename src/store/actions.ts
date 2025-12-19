@@ -127,3 +127,9 @@ export function setIsViewingSolution(value: boolean) {
     isViewingSolution: value,
   })
 }
+
+export function setIsExpandMode(value: boolean) {
+  useAppStore.setState({
+    isExpandMode: value,
+  })
+}

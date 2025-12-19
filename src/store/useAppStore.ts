@@ -27,6 +27,7 @@ export type AppState = {
 
   replicationStateId: number | undefined
   isViewingSolution: boolean
+  isExpandMode: boolean
   solutionScheduledProcedureStartTimes: Record<ElementId, number> | undefined
 
   replicationState: ReplicationState<FormData> | undefined
@@ -80,6 +81,7 @@ export const useAppStore = create<AppState>(() => ({
 
   replicationStateId: undefined,
   isViewingSolution: false,
+  isExpandMode: false, // todo need to reset when switching repliationStateId
   solutionScheduledProcedureStartTimes: undefined,
 
   replicationState: undefined,
