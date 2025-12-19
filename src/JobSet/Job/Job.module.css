@@ -36,7 +36,7 @@ To vertically align the icon
 
 .job-progress-check-mark {
   stroke: #ecedf0;
-  stroke-width: 24px;
+  stroke-width: 24;
   transition: 0.4s stroke-dashoffset ease-out 0.4s;
 }
 

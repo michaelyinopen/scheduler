@@ -132,7 +132,7 @@
 
 .completed-icon--check-mark {
   stroke: #ecedf0;
-  stroke-width: 24px;
+  stroke-width: 24;
 }
 
 .not-completed-icon {
@@ -150,4 +150,16 @@
 
 .conflict-icon--exclamation-mark {
   fill: #ecedf0;
+}
+
+.plus-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: hsl(210, 79%, 50%);
+}
+
+.plus-icon-sign {
+  stroke: #ecedf0;
+  stroke-width: 24;
+  stroke-linecap: round;
 }
