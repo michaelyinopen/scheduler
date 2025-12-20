@@ -32,6 +32,6 @@ export {
   elementIdComparer,
   integrate,
   integrateMoved,
-  activeValueBlocks,
+  getActiveValueBlocks,
   getActiveElementIds,
 } from './yata.ts'

@@ -12,7 +12,8 @@ import {
   type ReplicatedMessage,
   formDataCrdtApi,
   vectorClockMerge,
-  type SubmitMessage
+  type SubmitMessage,
+  getActiveValueBlocks
 } from '@michaelyinopen/scheduler-common'
 import { useAppStore } from './useAppStore'
 import { calculateTaskPositions, eventsMightTaskPositions } from '../utils/taskStacking'
@@ -170,6 +171,67 @@ export function scheduledProcedure(jobId: ElementId, procedureId: ElementId, sta
       }
     }
   )
+
+  const newCrdt: FormData = applyEvent(event, crdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: event.localSequence,
+    crdt: newCrdt,
+    version: event.version,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, event]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(event.localSequence, [event])
+}
+
+export function insertJobAtTheEnd() {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const localEvents = useAppStore.getState().localEvents
+
+  const activeValueBlocks = crdt.jobs === undefined
+    ? undefined
+    : getActiveValueBlocks(crdt.jobs)
+
+  const originLeftIndex: number | undefined = activeValueBlocks === undefined
+    ? undefined
+    : activeValueBlocks[activeValueBlocks.length - 1]?.indexInYata
+
+  const originLeft = originLeftIndex === undefined
+    ? undefined
+    : crdt.jobs!.blocks[originLeftIndex]?.id
+
+  const originRight = originLeftIndex === undefined
+    ? undefined
+    : crdt.jobs!.blocks[originLeftIndex + 1]?.id
+
+  const event = prepare(
+    replicaId,
+    sequence,
+    version,
+    {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation:
+      {
+        type: operationType.insertElement,
+        id: `${replicaId}.${sequence + 1}`,
+        originLeft,
+        originRight,
+        elementValue: {},
+      }
+    }
+  )
+  // job title and color
 
   const newCrdt: FormData = applyEvent(event, crdt)
 
