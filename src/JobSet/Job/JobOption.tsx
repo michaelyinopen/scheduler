@@ -2,27 +2,30 @@ import { Popover } from '@base-ui-components/react/popover'
 import { useShallow } from 'zustand/shallow'
 import type { ElementId, JobValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { pickTextColor } from '../../utils/jobColors'
-import { useAppStore } from '../../store'
+import { deleteJob, useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import { OptionIcon } from './OptionIcon'
 import { JobHeader } from './JobHeader'
 import baseClasses from '../../components/base.module.css'
 import jobSetClasses from '../JobSet.module.css'
 import jobClasses from './Job.module.css'
+import { DeleteIcon } from '../../components/DeleteIcon'
+import { Button } from '@base-ui/react'
 
 export type JobOptionProps = {
   id: ElementId,
 }
 
 export const JobOption = ({ id }: JobOptionProps) => {
-  const [jobTitle, jobColor, jobTextColor] = useAppStore(useShallow(state => {
+  const [jobTitle, jobColor, jobTextColor, isExpandMode] = useAppStore(useShallow(state => {
     const job = (state.replicationState?.crdt.jobs?.elements[id] as ValueElement<JobValue> | undefined)?.value
     const jobTitle = job?.title?.value
     const jobColor = job?.color?.value
     const jobTextColor = job?.color?.value !== undefined && job?.color?.value.length >= 6
       ? pickTextColor(job?.color?.value)
       : undefined
-    return [jobTitle, jobColor, jobTextColor]
+    const isExpandMode = state.isExpandMode
+    return [jobTitle, jobColor, jobTextColor, isExpandMode]
   }))
 
   return (
@@ -40,7 +43,7 @@ export const JobOption = ({ id }: JobOptionProps) => {
                 </Popover.Arrow>
                 <Popover.Title className={baseClasses.popupTitle}><JobHeader id={id} inline={true} /> options</Popover.Title>
                 <Popover.Description className={baseClasses.popupDescription} render={<div />}>
-                  <table className={'table--unstyled' + ' '+ jobClasses.jobOptionDetail}>
+                  <table className={'table--unstyled' + ' ' + jobClasses.jobOptionDetail}>
                     <tbody>
                       <tr>
                         <th>Title:</th>
@@ -59,6 +62,20 @@ export const JobOption = ({ id }: JobOptionProps) => {
                           </span>
                         </td>
                       </tr>
+                      {isExpandMode && (
+                        <tr>
+                          <td>
+                            <Button
+                              className={baseClasses.iconButton}
+                              aria-label={`Delete job ${jobTitle ?? ''}`}
+                              title={`Delete job ${jobTitle ?? ''}`}
+                              onClick={() => deleteJob(id)}
+                            >
+                              <DeleteIcon />
+                            </Button>
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </Popover.Description>

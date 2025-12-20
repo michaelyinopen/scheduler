@@ -28,6 +28,9 @@
 
 .insert-job-item {
   grid-column: job-header-start / job-header-end;
+  display: flex;
+  height: 1.15rem;
+  align-items: center;
 }
 
 .job {

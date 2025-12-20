@@ -198,6 +198,7 @@ export function scheduledProcedure(jobId: ElementId, procedureId: ElementId, sta
 
 export function insertJobAtTheEnd() {
   const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const jobs = crdt.jobs
   const localEvents = useAppStore.getState().localEvents
 
   // insert job
@@ -205,9 +206,9 @@ export function insertJobAtTheEnd() {
   const insertSequence = sequence + 1
   const jobId = `${replicaId}.${insertSequence}` as const
 
-  const activeValueBlocks = crdt.jobs === undefined
+  const activeValueBlocks = jobs === undefined
     ? undefined
-    : getActiveValueBlocks(crdt.jobs)
+    : getActiveValueBlocks(jobs)
 
   const originLeftIndex: number | undefined = activeValueBlocks === undefined
     ? undefined
@@ -215,11 +216,11 @@ export function insertJobAtTheEnd() {
 
   const originLeft = originLeftIndex === undefined
     ? undefined
-    : crdt.jobs!.blocks[originLeftIndex]?.id
+    : jobs!.blocks[originLeftIndex]?.id
 
   const originRight = originLeftIndex === undefined
     ? undefined
-    : crdt.jobs!.blocks[originLeftIndex + 1]?.id
+    : jobs!.blocks[originLeftIndex + 1]?.id
 
   const insertEvent = {
     version: insertVersion,
@@ -243,7 +244,15 @@ export function insertJobAtTheEnd() {
   // job title
   const titleVersion = nextVersion(replicaId, insertVersion)
   const titleSequence = insertSequence + 1
-  const jobNumber = (activeValueBlocks?.length ?? 0) + 1
+  const jobNumber = jobs === undefined // 1 + the number of value elements (including deleted elements)
+    ? 1
+    : jobs.blocks.reduce((acc, block) => {
+      const element = crdt.jobs!.elements[block.id]
+
+      return isValueElement(element)
+        ? acc + 1
+        : acc
+    }, 1)
 
   const titleEvent: Event<Operation> = {
     version: titleVersion,
@@ -285,7 +294,7 @@ export function insertJobAtTheEnd() {
 
   const lastColor = excludeColors[excludeColors.length - 1]
   const color = getNewJobColor(excludeColors, lastColor)
-  
+
   const jobColorVersion = nextVersion(replicaId, titleVersion)
   const jobColorSequence = titleSequence + 1
 
@@ -335,4 +344,45 @@ export function insertJobAtTheEnd() {
   })
 
   submitEvents(jobColorSequence, [insertEvent, titleEvent, jobColorEvent])
+}
+
+export function deleteJob(jobId: ElementId) {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const localEvents = useAppStore.getState().localEvents
+
+  const event = prepare(
+    replicaId,
+    sequence,
+    version,
+    {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation:
+      {
+        type: operationType.deleteElement,
+        id: jobId,
+      }
+    }
+  )
+
+  const newCrdt: FormData = applyEvent(event, crdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: event.localSequence,
+    crdt: newCrdt,
+    version: event.version,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, event]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(event.localSequence, [event])
 }

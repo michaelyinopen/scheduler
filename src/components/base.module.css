@@ -163,3 +163,9 @@
   stroke-width: 24;
   stroke-linecap: round;
 }
+
+.delete-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
+}
