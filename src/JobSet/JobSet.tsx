@@ -1,13 +1,14 @@
 import { memo } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { useDroppable } from '@dnd-kit/core'
+import { Button } from '@base-ui/react'
+import { Spinner } from '../components/Spinner'
 import { dropType, useDragAndDropStore } from '../dragAndDrop'
 import { insertJobAtTheEnd, jobIdsSelector, useAppStore } from '../store'
-import { Spinner } from '../components/Spinner'
 import { Job } from './Job'
-import classes from './JobSet.module.css'
-import { Button } from '@base-ui/react'
 import { PlusIcon } from '../components/PlusIcon'
+import baseClasses from '../components/base.module.css'
+import classes from './JobSet.module.css'
 
 const JobSet = memo(() => {
   const [hasLoadedReplicationState, jobIds, isExpandMode] = useAppStore(useShallow((state) => {
@@ -52,7 +53,7 @@ const JobSet = memo(() => {
       })}
       {isExpandMode && (
         <li key='insert-job' className={classes.insertJobItem}>
-          <Button onClick={insertJobAtTheEnd} aria-label='Insert job' title='Insert job'>
+          <Button onClick={insertJobAtTheEnd} className={baseClasses.iconButton} aria-label='Insert job' title='Insert job'>
             <PlusIcon />
           </Button>
         </li>

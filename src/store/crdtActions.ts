@@ -13,11 +13,13 @@ import {
   formDataCrdtApi,
   vectorClockMerge,
   type SubmitMessage,
-  getActiveValueBlocks
+  getActiveValueBlocks,
+  isValueElement,
 } from '@michaelyinopen/scheduler-common'
-import { useAppStore } from './useAppStore'
+import { getNewJobColor } from '../utils/jobColors'
 import { calculateTaskPositions, eventsMightTaskPositions } from '../utils/taskStacking'
 import { onlineStatus } from '../useConnection'
+import { useAppStore } from './useAppStore'
 
 function prepare(replicaId: ReplicaId, sequence: number, version: VectorClock, operation: Operation) {
   const newVersion = nextVersion(replicaId, version)
@@ -198,6 +200,11 @@ export function insertJobAtTheEnd() {
   const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
   const localEvents = useAppStore.getState().localEvents
 
+  // insert job
+  const insertVersion = nextVersion(replicaId, version)
+  const insertSequence = sequence + 1
+  const jobId = `${replicaId}.${insertSequence}` as const
+
   const activeValueBlocks = crdt.jobs === undefined
     ? undefined
     : getActiveValueBlocks(crdt.jobs)
@@ -214,37 +221,112 @@ export function insertJobAtTheEnd() {
     ? undefined
     : crdt.jobs!.blocks[originLeftIndex + 1]?.id
 
-  const event = prepare(
-    replicaId,
-    sequence,
-    version,
-    {
+  const insertEvent = {
+    version: insertVersion,
+    origin: replicaId,
+    originSequence: insertSequence,
+    localSequence: insertSequence,
+    operation: {
       type: operationType.update,
       key: 'jobs',
       childOperation:
       {
         type: operationType.insertElement,
-        id: `${replicaId}.${sequence + 1}`,
+        id: jobId,
         originLeft,
         originRight,
         elementValue: {},
       }
     }
-  )
-  // job title and color
+  }
 
-  const newCrdt: FormData = applyEvent(event, crdt)
+  // job title
+  const titleVersion = nextVersion(replicaId, insertVersion)
+  const titleSequence = insertSequence + 1
+  const jobNumber = (activeValueBlocks?.length ?? 0) + 1
+
+  const titleEvent: Event<Operation> = {
+    version: titleVersion,
+    origin: replicaId,
+    originSequence: titleSequence,
+    localSequence: titleSequence,
+    operation: {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation: {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'title',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: `${jobNumber}`,
+          }
+        }
+      }
+    },
+  }
+
+  // job color
+  const excludeColors = crdt.jobs === undefined
+    ? []
+    : Object.values(crdt.jobs.elements)
+      .reduce((acc, e) => {
+        if (isValueElement(e) && !e.isDeleted) {
+          const jobColor = e.value.color?.value
+          if (jobColor !== undefined) {
+            acc.push(jobColor)
+          }
+        }
+        return acc
+      }, [] as string[])
+
+  const lastColor = excludeColors[excludeColors.length - 1]
+  const color = getNewJobColor(excludeColors, lastColor)
+  
+  const jobColorVersion = nextVersion(replicaId, titleVersion)
+  const jobColorSequence = titleSequence + 1
+
+  const jobColorEvent: Event<Operation> = {
+    version: jobColorVersion,
+    origin: replicaId,
+    originSequence: jobColorSequence,
+    localSequence: jobColorSequence,
+    operation: {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation: {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'color',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: color,
+          }
+        }
+      }
+    },
+  }
+
+  let newCrdt: FormData = applyEvent(insertEvent, crdt)
+  newCrdt = applyEvent(titleEvent, newCrdt)
+  newCrdt = applyEvent(jobColorEvent, newCrdt)
 
   const newReplicationState = {
     replicaId,
-    sequence: event.localSequence,
+    sequence: jobColorSequence,
     crdt: newCrdt,
-    version: event.version,
+    version: jobColorVersion,
     observed: observed,
   }
-  const newLocalEvents = [...localEvents, event]
+  const newLocalEvents = [...localEvents, insertEvent, titleEvent, jobColorEvent]
 
-  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [insertEvent, titleEvent, jobColorEvent])
 
   useAppStore.setState({
     replicationState: newReplicationState,
@@ -252,5 +334,5 @@ export function insertJobAtTheEnd() {
     ...calculatedChanges,
   })
 
-  submitEvents(event.localSequence, [event])
+  submitEvents(jobColorSequence, [insertEvent, titleEvent, jobColorEvent])
 }
