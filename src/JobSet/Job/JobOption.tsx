@@ -2,7 +2,7 @@ import { Popover } from '@base-ui-components/react/popover'
 import { useShallow } from 'zustand/shallow'
 import type { ElementId, JobValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { pickTextColor } from '../../utils/jobColors'
-import { deleteJob, useAppStore } from '../../store'
+import { deleteJob, setJobColor, useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import { OptionIcon } from './OptionIcon'
 import { JobHeader } from './JobHeader'
@@ -11,10 +11,14 @@ import jobSetClasses from '../JobSet.module.css'
 import jobClasses from './Job.module.css'
 import { DeleteIcon } from '../../components/DeleteIcon'
 import { Button } from '@base-ui/react'
+import { debounce } from 'lodash-es'
+import { colorPickerDebounceDelayMs } from '../../constants'
 
 export type JobOptionProps = {
   id: ElementId,
 }
+
+const debouncedSetJobColor = debounce(setJobColor, colorPickerDebounceDelayMs)
 
 export const JobOption = ({ id }: JobOptionProps) => {
   const [jobTitle, jobColor, jobTextColor, isExpandMode] = useAppStore(useShallow(state => {
@@ -42,48 +46,100 @@ export const JobOption = ({ id }: JobOptionProps) => {
                   <ArrowSvg />
                 </Popover.Arrow>
                 <Popover.Title className={baseClasses.popupTitle}><JobHeader id={id} inline={true} /> options</Popover.Title>
-                <Popover.Description className={baseClasses.popupDescription} render={<div />}>
-                  <table className={'table--unstyled' + ' ' + jobClasses.jobOptionDetail}>
-                    <tbody>
-                      <tr>
-                        <th>Title:</th>
-                        <td>
-                          {jobTitle}
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Color:</th>
-                        <td>
-                          <span
-                            className={jobClasses.jobTitle + ' ' + jobClasses.jobTitleInline}
-                            style={{ backgroundColor: jobColor, color: jobTextColor }}
-                          >
-                            {jobColor}
-                          </span>
-                        </td>
-                      </tr>
-                      {isExpandMode && (
-                        <tr>
-                          <td>
-                            <Button
-                              className={baseClasses.iconButton}
-                              aria-label={`Delete job ${jobTitle ?? ''}`}
-                              title={`Delete job ${jobTitle ?? ''}`}
-                              onClick={() => deleteJob(id)}
-                            >
-                              <DeleteIcon />
-                            </Button>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </Popover.Description>
+                {isExpandMode
+                  ? popoverDescriptionExapndMode(id, jobTitle, jobColor, jobTextColor)
+                  : popoverDescription(jobTitle, jobColor, jobTextColor)
+                }
               </Popover.Popup>
             </Popover.Positioner>
           </Popover.Portal>
         </Popover.Root>
       </div>
     </ div>
+  )
+}
+
+function popoverDescription(
+  jobTitle: string | undefined,
+  jobColor: string | undefined,
+  jobTextColor: string | undefined
+) {
+  return (
+    <Popover.Description className={baseClasses.popupDescription} render={<div />}>
+      <table className={'table--unstyled' + ' ' + jobClasses.jobOptionDetail}>
+        <tbody>
+          <tr>
+            <th>Title:</th>
+            <td>
+              {jobTitle}
+            </td>
+          </tr>
+          <tr>
+            <th>Color:</th>
+            <td>
+              <span
+                className={jobClasses.jobTitle + ' ' + jobClasses.jobTitleInline}
+                style={{ backgroundColor: jobColor, color: jobTextColor }}
+              >
+                {jobColor}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </Popover.Description>
+  )
+}
+
+function popoverDescriptionExapndMode(
+  id: ElementId,
+  jobTitle: string | undefined,
+  jobColor: string | undefined,
+  jobTextColor: string | undefined
+) {
+  return (
+    <Popover.Description className={baseClasses.popupDescription} render={<div />}>
+      <table className={'table--unstyled' + ' ' + jobClasses.jobOptionDetail}>
+        <tbody>
+          <tr>
+            <th>Title:</th>
+            <td>
+              {jobTitle}
+            </td>
+          </tr>
+          <tr>
+            <th>Color:</th>
+            <td>
+              <span
+                className={jobClasses.jobTitle + ' ' + jobClasses.jobTitleInline}
+                style={{ backgroundColor: jobColor, color: jobTextColor }}
+              >
+                {jobColor}
+              </span>
+              <input
+                type='color'
+                value={jobColor}
+                onChange={e => {
+                  const color = e.target.value
+                  debouncedSetJobColor(id, color)
+                }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <Button
+                className={baseClasses.iconButton}
+                aria-label={`Delete job ${jobTitle ?? ''}`}
+                title={`Delete job ${jobTitle ?? ''}`}
+                onClick={() => deleteJob(id)}
+              >
+                <DeleteIcon />
+              </Button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </Popover.Description>
   )
 }

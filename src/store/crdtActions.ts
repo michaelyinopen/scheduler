@@ -15,6 +15,8 @@ import {
   type SubmitMessage,
   getActiveValueBlocks,
   isValueElement,
+  type ValueElement,
+  type JobValue,
 } from '@michaelyinopen/scheduler-common'
 import { getNewJobColor } from '../utils/jobColors'
 import { calculateTaskPositions, eventsMightTaskPositions } from '../utils/taskStacking'
@@ -247,7 +249,7 @@ export function insertJobAtTheEnd() {
   const jobNumber = jobs === undefined // 1 + the number of value elements (including deleted elements)
     ? 1
     : jobs.blocks.reduce((acc, block) => {
-      const element = crdt.jobs!.elements[block.id]
+      const element = jobs.elements[block.id]
 
       return isValueElement(element)
         ? acc + 1
@@ -279,9 +281,9 @@ export function insertJobAtTheEnd() {
   }
 
   // job color
-  const excludeColors = crdt.jobs === undefined
+  const excludeColors = jobs === undefined
     ? []
-    : Object.values(crdt.jobs.elements)
+    : Object.values(jobs.elements)
       .reduce((acc, e) => {
         if (isValueElement(e) && !e.isDeleted) {
           const jobColor = e.value.color?.value
@@ -363,6 +365,170 @@ export function deleteJob(jobId: ElementId) {
         id: jobId,
       }
     }
+  )
+
+  const newCrdt: FormData = applyEvent(event, crdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: event.localSequence,
+    crdt: newCrdt,
+    version: event.version,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, event]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(event.localSequence, [event])
+}
+
+export function setJobTitle(jobId: ElementId, title: string) {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const localEvents = useAppStore.getState().localEvents
+
+  const event = prepare(
+    replicaId,
+    sequence,
+    version,
+    {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation: {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'title',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: title,
+          }
+        }
+      }
+    },
+  )
+
+  const newCrdt: FormData = applyEvent(event, crdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: event.localSequence,
+    crdt: newCrdt,
+    version: event.version,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, event]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(event.localSequence, [event])
+}
+
+export function setJobColor(jobId: ElementId, color: string) {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const localEvents = useAppStore.getState().localEvents
+
+  const event = prepare(
+    replicaId,
+    sequence,
+    version,
+    {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation: {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'color',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: color,
+          }
+        }
+      }
+    },
+  )
+
+  const newCrdt: FormData = applyEvent(event, crdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: event.localSequence,
+    crdt: newCrdt,
+    version: event.version,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, event]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(event.localSequence, [event])
+}
+
+export function changeJobColorToNextPresetColor(jobId: ElementId) {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const jobs = crdt.jobs
+  const localEvents = useAppStore.getState().localEvents
+
+  const excludeColors = jobs === undefined
+    ? []
+    : Object.values(jobs.elements)
+      .reduce((acc, e) => {
+        if (isValueElement(e) && !e.isDeleted) {
+          const jobColor = e.value.color?.value
+          if (jobColor !== undefined) {
+            acc.push(jobColor)
+          }
+        }
+        return acc
+      }, [] as string[])
+
+  const lastColor = (jobs?.elements[jobId] as ValueElement<JobValue> | undefined)?.value.color?.value
+  const color = getNewJobColor(excludeColors, lastColor)
+
+  const event = prepare(
+    replicaId,
+    sequence,
+    version,
+    {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation: {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'color',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: color,
+          }
+        }
+      }
+    },
   )
 
   const newCrdt: FormData = applyEvent(event, crdt)

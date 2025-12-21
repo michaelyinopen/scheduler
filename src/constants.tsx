@@ -39,3 +39,5 @@ export const exampleDescriptions = {
     Drag the procedures to the timeline, until all procedures are scheduled and there are no conflicts.
   </>)
 }
+
+export const colorPickerDebounceDelayMs = 200
