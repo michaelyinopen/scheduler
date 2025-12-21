@@ -118,7 +118,7 @@ function popoverDescriptionExapndMode(
                 >
                   {jobColor}
                   <Button
-                    className={jobClasses.changeColorIconButton}
+                    className={jobClasses.changeColorIconButton + ' ' + 'pointer'}
                     onClick={() => { changeJobColorToNextPresetColor(id) }}
                     style={{ '--job-text-color': jobTextColor } as React.CSSProperties}
                   >
@@ -139,7 +139,7 @@ function popoverDescriptionExapndMode(
           <tr>
             <td>
               <Button
-                className={baseClasses.iconButton}
+                className={baseClasses.iconButton + ' ' + 'pointer'}
                 aria-label={`Delete job ${jobTitle ?? ''}`}
                 title={`Delete job ${jobTitle ?? ''}`}
                 onClick={() => deleteJob(id)}

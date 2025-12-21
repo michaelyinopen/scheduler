@@ -53,7 +53,12 @@ const JobSet = memo(() => {
       })}
       {isExpandMode && (
         <li key='insert-job' className={classes.insertJobItem}>
-          <Button onClick={insertJobAtTheEnd} className={baseClasses.iconButton} aria-label='Insert job' title='Insert job'>
+          <Button
+            onClick={insertJobAtTheEnd}
+            className={baseClasses.iconButton + ' ' + 'pointer'}
+            aria-label='Insert job'
+            title='Insert job'
+          >
             <PlusIcon />
           </Button>
         </li>
