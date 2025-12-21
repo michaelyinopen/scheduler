@@ -1,18 +1,19 @@
 import { Popover } from '@base-ui-components/react/popover'
 import { useShallow } from 'zustand/shallow'
+import { debounce } from 'lodash-es'
+import { Button } from '@base-ui/react'
 import type { ElementId, JobValue, ValueElement } from '@michaelyinopen/scheduler-common'
+import { colorPickerDebounceDelayMs } from '../../constants'
 import { pickTextColor } from '../../utils/jobColors'
-import { deleteJob, setJobColor, useAppStore } from '../../store'
+import { changeJobColorToNextPresetColor, deleteJob, setJobColor, useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
+import { RenewIcon } from '../../components/RenewIcon'
+import { DeleteIcon } from '../../components/DeleteIcon'
 import { OptionIcon } from './OptionIcon'
 import { JobHeader } from './JobHeader'
 import baseClasses from '../../components/base.module.css'
 import jobSetClasses from '../JobSet.module.css'
 import jobClasses from './Job.module.css'
-import { DeleteIcon } from '../../components/DeleteIcon'
-import { Button } from '@base-ui/react'
-import { debounce } from 'lodash-es'
-import { colorPickerDebounceDelayMs } from '../../constants'
 
 export type JobOptionProps = {
   id: ElementId,
@@ -110,20 +111,29 @@ function popoverDescriptionExapndMode(
           <tr>
             <th>Color:</th>
             <td>
-              <span
-                className={jobClasses.jobTitle + ' ' + jobClasses.jobTitleInline}
-                style={{ backgroundColor: jobColor, color: jobTextColor }}
-              >
-                {jobColor}
-              </span>
-              <input
-                type='color'
-                value={jobColor}
-                onChange={e => {
-                  const color = e.target.value
-                  debouncedSetJobColor(id, color)
-                }}
-              />
+              <div className='flex--center'>
+                <span
+                  className={jobClasses.jobColorEditing}
+                  style={{ backgroundColor: jobColor, color: jobTextColor }}
+                >
+                  {jobColor}
+                  <Button
+                    className={jobClasses.changeColorIconButton}
+                    onClick={() => { changeJobColorToNextPresetColor(id) }}
+                    style={{ '--job-text-color': jobTextColor } as React.CSSProperties}
+                  >
+                    <RenewIcon />
+                  </Button>
+                </span>
+                <input
+                  type='color'
+                  value={jobColor}
+                  onChange={e => {
+                    const color = e.target.value
+                    debouncedSetJobColor(id, color)
+                  }}
+                />
+              </div>
             </td>
           </tr>
           <tr>
