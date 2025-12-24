@@ -1,0 +1,107 @@
+.field {
+  position: relative;
+  padding: 15px 0 0;
+}
+
+.field.field--input::after {
+  left: 0px;
+  bottom: 0px;
+  content: " ";
+  position: absolute;
+  right: 0px;
+  pointer-events: none;
+  border-bottom: 1px solid var(--color-gray-700);
+  transition: border-bottom-color 200ms ease;
+}
+
+.field.disabled::after {
+  border-bottom-style: dotted;
+}
+
+.field:hover::after {
+  border-bottom: 2px solid currentColor;
+}
+
+.field.disabled:hover::after {
+  border-bottom: 1px dotted var(--color-gray-700);
+}
+
+.field:focus-within::after {
+  border-bottom: 2px solid rgb(144, 202, 449);
+}
+
+.input {
+  width: stretch;
+  border: 0;
+  outline: 0;
+  font-size: 16px;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 200ms ease;
+  line-height: normal;
+}
+
+.input.input--short-width {
+  field-sizing: content; /* limited support but the fallback look good too */
+  min-width: 5rem;
+}
+
+.field.disabled .input {
+  color: var(--color-gray-600);
+}
+
+.input::placeholder {
+  color: transparent;
+}
+
+.input:placeholder-shown ~ .label {
+  font-size: 16px;
+  cursor: text;
+  top: 20px;
+  user-select: none;
+}
+
+.label,
+.input:focus ~ .label {
+  position: absolute;
+  top: 0;
+  display: block;
+  font-size: 12px;
+  color: var(--color-gray-700);
+  transition: all 200ms ease;
+}
+
+.field.disabled .label {
+  color: var(--color-gray-600);
+}
+
+.input:focus ~ .label {
+  color: rgb(144, 202, 449);
+}
+
+@media (prefers-color-scheme: light) {
+  .field:focus-within::after {
+    border-bottom: 2px solid #1976d2;
+  }
+
+  .input:focus ~ .label {
+    color: #1976d2;
+  }
+}
+
+.control {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  margin: 7px 0;
+}
+
+.control:focus-within ~ .label {
+  color: rgb(144, 202, 449);
+}
+
+@media (prefers-color-scheme: light) {
+  .control:focus-within ~ .label {
+    color: #1976d2;
+  }
+}

@@ -1,17 +1,18 @@
 import { Popover } from '@base-ui-components/react/popover'
 import { useShallow } from 'zustand/shallow'
 import { debounce } from 'lodash-es'
-import { Button } from '@base-ui/react'
+import { Button, Field, Input } from '@base-ui/react'
 import type { ElementId, JobValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { colorPickerDebounceDelayMs } from '../../constants'
 import { pickTextColor } from '../../utils/jobColors'
-import { changeJobColorToNextPresetColor, deleteJob, setJobColor, useAppStore } from '../../store'
+import { changeJobColorToNextPresetColor, deleteJob, setJobColor, setJobTitle, useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import { RenewIcon } from '../../components/RenewIcon'
 import { DeleteIcon } from '../../components/DeleteIcon'
 import { OptionIcon } from './OptionIcon'
 import { JobHeader } from './JobHeader'
 import baseClasses from '../../components/base.module.css'
+import fieldClasses from '../../components/Field.module.css'
 import jobSetClasses from '../JobSet.module.css'
 import jobClasses from './Job.module.css'
 
@@ -99,57 +100,51 @@ function popoverDescriptionExapndMode(
   jobTextColor: string | undefined
 ) {
   return (
-    <Popover.Description className={baseClasses.popupDescription} render={<div />}>
-      <table className={'table--unstyled' + ' ' + jobClasses.jobOptionDetail}>
-        <tbody>
-          <tr>
-            <th>Title:</th>
-            <td>
-              {jobTitle}
-            </td>
-          </tr>
-          <tr>
-            <th>Color:</th>
-            <td>
-              <div className='flex--center'>
-                <span
-                  className={jobClasses.jobColorEditing}
-                  style={{ backgroundColor: jobColor, color: jobTextColor }}
-                >
-                  {jobColor}
-                  <Button
-                    className={jobClasses.changeColorIconButton + ' ' + 'pointer'}
-                    onClick={() => { changeJobColorToNextPresetColor(id) }}
-                    style={{ '--job-text-color': jobTextColor } as React.CSSProperties}
-                  >
-                    <RenewIcon />
-                  </Button>
-                </span>
-                <input
-                  type='color'
-                  value={jobColor}
-                  onChange={e => {
-                    const color = e.target.value
-                    debouncedSetJobColor(id, color)
-                  }}
-                />
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <Button
-                className={baseClasses.iconButton + ' ' + 'pointer'}
-                aria-label={`Delete job ${jobTitle ?? ''}`}
-                title={`Delete job ${jobTitle ?? ''}`}
-                onClick={() => deleteJob(id)}
-              >
-                <DeleteIcon />
-              </Button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <Popover.Description className={baseClasses.popupDescription + ' ' + jobClasses.jobOptionExpandModeDetail} render={<div />}>
+      <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
+        <Input
+          id='title-input'
+          className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
+          placeholder='Title'
+          value={jobTitle}
+          onChange={e => setJobTitle(id, e.target.value)}
+        />
+        <Field.Label htmlFor='title-input' className={fieldClasses.label}>Title</Field.Label>
+      </Field.Root>
+      <Field.Root className={fieldClasses.field}>
+        <div className={'flex--center' + ' ' + fieldClasses.control}>
+          <span
+            className={jobClasses.jobColorEditing}
+            style={{ backgroundColor: jobColor, color: jobTextColor }}
+          >
+            {jobColor}
+            <Button
+              className={jobClasses.changeColorIconButton + ' ' + 'pointer'}
+              onClick={() => { changeJobColorToNextPresetColor(id) }}
+              style={{ '--job-text-color': jobTextColor } as React.CSSProperties}
+            >
+              <RenewIcon />
+            </Button>
+          </span>
+          <input
+            type='color'
+            value={jobColor}
+            onChange={e => {
+              const color = e.target.value
+              debouncedSetJobColor(id, color)
+            }}
+          />
+        </div>
+        <Field.Label className={fieldClasses.label}>Color</Field.Label>
+      </Field.Root>
+      <Button
+        className={baseClasses.iconButton + ' ' + 'pointer'}
+        aria-label={`Delete job ${jobTitle ?? ''}`}
+        title={`Delete job ${jobTitle ?? ''}`}
+        onClick={() => deleteJob(id)}
+      >
+        <DeleteIcon />
+      </Button>
     </Popover.Description>
   )
 }

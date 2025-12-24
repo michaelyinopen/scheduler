@@ -30,6 +30,14 @@ To vertically align the icon
   margin-top: 0.75rem;
 }
 
+.job-option-expand-mode-detail {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
 .change-color-icon-button {
   box-sizing: border-box;
   display: inline-flex;
