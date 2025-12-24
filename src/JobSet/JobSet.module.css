@@ -52,7 +52,7 @@
 
 .job-set__job-header {
   grid-column: job-header-start / job-header-end;
-  margin-left: 0.5rem;
+  margin: 0.25rem 0 0.25rem 0.5rem;
   font-size: 1.17rem;
 }
 

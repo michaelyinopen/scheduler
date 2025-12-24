@@ -23,6 +23,7 @@ To vertically align the icon
   display: flex;
   height: 1.15em;
   /* line height */
+  margin: 0.25rem 0;
   align-items: center;
 }
 
