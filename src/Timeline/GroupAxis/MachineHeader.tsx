@@ -2,7 +2,7 @@ import { useShallow } from 'zustand/shallow'
 import { Popover } from '@base-ui-components/react'
 import { Field, Input } from '@base-ui/react'
 import type { ElementId, MachineValue, ValueElement } from '@michaelyinopen/scheduler-common'
-import { useAppStore } from '../../store'
+import { setMachineDescription, setMachineTitle, useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import baseClasses from '../../components/base.module.css'
 import fieldClasses from '../../components/Field.module.css'
@@ -27,10 +27,13 @@ export const MachineHeader = ({ id, className, inline, canEdit }: MachineHeaderP
 
   const propsClassName = className ? ' ' + className : ''
   const inlineMachineHeaderClassName = inline ? ` ${classes.machineHeaderInline}` : ''
+  const expandModeClassName = isExpandMode && canEdit ? ` ${classes.machineHeaderExpandMode}` : ''
 
   return (
-    <Popover.Root openOnHover={true}>
-      <Popover.Trigger nativeButton={false} render={<div className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName} />}>
+    <Popover.Root openOnHover={!isExpandMode || !canEdit}>
+      <Popover.Trigger
+        nativeButton={isExpandMode && canEdit}
+        render={<div className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName + expandModeClassName} />}>
         {title}
       </Popover.Trigger>
       {isExpandMode && canEdit
@@ -57,7 +60,7 @@ function tooltipPopup(description: string | undefined) {
   )
 }
 
-function expandModePopup(id, title: string | undefined, description: string | undefined) {
+function expandModePopup(id: ElementId, title: string | undefined, description: string | undefined) {
   return (
     <Popover.Portal>
       <Popover.Positioner sideOffset={8} align='start'>
@@ -65,6 +68,7 @@ function expandModePopup(id, title: string | undefined, description: string | un
           <Popover.Arrow className={baseClasses.arrow}>
             <ArrowSvg />
           </Popover.Arrow>
+          <Popover.Title className={baseClasses.popupTitle}>Machine options</Popover.Title>
           <Popover.Description className={baseClasses.popupDescription + ' ' + baseClasses.popupDescriptionExpandMode} render={<div />}>
             <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
               <Input
@@ -72,7 +76,7 @@ function expandModePopup(id, title: string | undefined, description: string | un
                 className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
                 placeholder='Title'
                 value={title}
-                onChange={e => setJobTitle(id, e.target.value)}
+                onChange={e => setMachineTitle(id, e.target.value)}
               />
               <Field.Label htmlFor={`machine-title-input-${id}`} className={fieldClasses.label}>Title</Field.Label>
             </Field.Root>
@@ -81,8 +85,8 @@ function expandModePopup(id, title: string | undefined, description: string | un
                 id={`machine-description-input-${id}`}
                 className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
                 placeholder='Description'
-                value={title}
-                onChange={e => setJobTitle(id, e.target.value)}
+                value={description}
+                onChange={e => setMachineDescription(id, e.target.value)}
               />
               <Field.Label htmlFor={`machine-description-input-${id}`} className={fieldClasses.label}>Description</Field.Label>
             </Field.Root>

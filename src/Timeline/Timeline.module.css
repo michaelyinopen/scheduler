@@ -9,7 +9,7 @@
   grid-template-rows: [groups-start] repeat(var(--group-count), minmax(calc(1.65rem + 10px), auto)) [groups-end time-axis-start] auto [time-axis-end];
 
   @media (max-width: 500px) {
-  grid-template-columns: [group-axis-start] minmax(50px, auto) [group-axis-end schedule-body-start] 1fr [schedule-body-end];
+    grid-template-columns: [group-axis-start] minmax(50px, auto) [group-axis-end schedule-body-start] 1fr [schedule-body-end];
   }
 }
 
@@ -47,6 +47,35 @@
 
 .machine-header--inline {
   display: inline;
+}
+
+.machine-header--expand-mode {
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  user-select: none;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-900);
+  user-select: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-gray-200);
+    }
+  }
+
+  &:active {
+    background-color: var(--color-gray-200);
+  }
+
+  &[data-popup-open] {
+    background-color: var(--color-gray-200);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: -1px;
+  }
 }
 
 .schedule-body {

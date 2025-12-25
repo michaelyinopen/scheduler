@@ -37,7 +37,7 @@ export const JobOption = ({ id }: JobOptionProps) => {
   return (
     <div className={jobSetClasses.jobOption}>
       <div className={jobClasses.lineHeightBox}>
-        <Popover.Root>
+        <Popover.Root openOnHover={!isExpandMode}>
           <Popover.Trigger className={baseClasses.iconButton}>
             <OptionIcon />
           </Popover.Trigger>

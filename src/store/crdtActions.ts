@@ -23,7 +23,10 @@ import { calculateTaskPositions, eventsMightTaskPositions } from '../utils/taskS
 import { onlineStatus } from '../useConnection'
 import { useAppStore } from './useAppStore'
 
-function prepare(replicaId: ReplicaId, sequence: number, version: VectorClock, operation: Operation) {
+function handleSingleOperation(operation: Operation) {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const localEvents = useAppStore.getState().localEvents
+
   const newVersion = nextVersion(replicaId, version)
   const newLocalSequence = sequence + 1
 
@@ -35,7 +38,26 @@ function prepare(replicaId: ReplicaId, sequence: number, version: VectorClock, o
     operation,
   }
 
-  return event
+  const newCrdt: FormData = applyEvent(event, crdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: event.localSequence,
+    crdt: newCrdt,
+    version: event.version,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, event]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(event.localSequence, [event])
 }
 
 // todo: autoTimeOptions 
@@ -147,13 +169,7 @@ export function handleReplicatedMessage(replicatedMessage: ReplicatedMessage) {
 }
 
 export function scheduledProcedure(jobId: ElementId, procedureId: ElementId, startTime?: number) {
-  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
-  const localEvents = useAppStore.getState().localEvents
-
-  const event = prepare(
-    replicaId,
-    sequence,
-    version,
+  handleSingleOperation(
     {
       type: operationType.update,
       key: 'scheduledProcedureStartTimes',
@@ -175,27 +191,6 @@ export function scheduledProcedure(jobId: ElementId, procedureId: ElementId, sta
       }
     }
   )
-
-  const newCrdt: FormData = applyEvent(event, crdt)
-
-  const newReplicationState = {
-    replicaId,
-    sequence: event.localSequence,
-    crdt: newCrdt,
-    version: event.version,
-    observed: observed,
-  }
-  const newLocalEvents = [...localEvents, event]
-
-  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
-
-  useAppStore.setState({
-    replicationState: newReplicationState,
-    localEvents: newLocalEvents,
-    ...calculatedChanges,
-  })
-
-  submitEvents(event.localSequence, [event])
 }
 
 export function insertJobAtTheEnd() {
@@ -349,13 +344,7 @@ export function insertJobAtTheEnd() {
 }
 
 export function deleteJob(jobId: ElementId) {
-  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
-  const localEvents = useAppStore.getState().localEvents
-
-  const event = prepare(
-    replicaId,
-    sequence,
-    version,
+  handleSingleOperation(
     {
       type: operationType.update,
       key: 'jobs',
@@ -366,37 +355,10 @@ export function deleteJob(jobId: ElementId) {
       }
     }
   )
-
-  const newCrdt: FormData = applyEvent(event, crdt)
-
-  const newReplicationState = {
-    replicaId,
-    sequence: event.localSequence,
-    crdt: newCrdt,
-    version: event.version,
-    observed: observed,
-  }
-  const newLocalEvents = [...localEvents, event]
-
-  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
-
-  useAppStore.setState({
-    replicationState: newReplicationState,
-    localEvents: newLocalEvents,
-    ...calculatedChanges,
-  })
-
-  submitEvents(event.localSequence, [event])
 }
 
 export function setJobTitle(jobId: ElementId, title: string) {
-  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
-  const localEvents = useAppStore.getState().localEvents
-
-  const event = prepare(
-    replicaId,
-    sequence,
-    version,
+  handleSingleOperation(
     {
       type: operationType.update,
       key: 'jobs',
@@ -415,37 +377,10 @@ export function setJobTitle(jobId: ElementId, title: string) {
       }
     },
   )
-
-  const newCrdt: FormData = applyEvent(event, crdt)
-
-  const newReplicationState = {
-    replicaId,
-    sequence: event.localSequence,
-    crdt: newCrdt,
-    version: event.version,
-    observed: observed,
-  }
-  const newLocalEvents = [...localEvents, event]
-
-  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
-
-  useAppStore.setState({
-    replicationState: newReplicationState,
-    localEvents: newLocalEvents,
-    ...calculatedChanges,
-  })
-
-  submitEvents(event.localSequence, [event])
 }
 
 export function setJobColor(jobId: ElementId, color: string) {
-  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
-  const localEvents = useAppStore.getState().localEvents
-
-  const event = prepare(
-    replicaId,
-    sequence,
-    version,
+  handleSingleOperation(
     {
       type: operationType.update,
       key: 'jobs',
@@ -464,33 +399,10 @@ export function setJobColor(jobId: ElementId, color: string) {
       }
     },
   )
-
-  const newCrdt: FormData = applyEvent(event, crdt)
-
-  const newReplicationState = {
-    replicaId,
-    sequence: event.localSequence,
-    crdt: newCrdt,
-    version: event.version,
-    observed: observed,
-  }
-  const newLocalEvents = [...localEvents, event]
-
-  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
-
-  useAppStore.setState({
-    replicationState: newReplicationState,
-    localEvents: newLocalEvents,
-    ...calculatedChanges,
-  })
-
-  submitEvents(event.localSequence, [event])
 }
 
 export function changeJobColorToNextPresetColor(jobId: ElementId) {
-  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
-  const jobs = crdt.jobs
-  const localEvents = useAppStore.getState().localEvents
+  const jobs = useAppStore.getState().replicationState?.crdt.jobs
 
   const excludeColors = jobs === undefined
     ? []
@@ -508,10 +420,7 @@ export function changeJobColorToNextPresetColor(jobId: ElementId) {
   const lastColor = (jobs?.elements[jobId] as ValueElement<JobValue> | undefined)?.value.color?.value
   const color = getNewJobColor(excludeColors, lastColor)
 
-  const event = prepare(
-    replicaId,
-    sequence,
-    version,
+  handleSingleOperation(
     {
       type: operationType.update,
       key: 'jobs',
@@ -530,25 +439,48 @@ export function changeJobColorToNextPresetColor(jobId: ElementId) {
       }
     },
   )
+}
 
-  const newCrdt: FormData = applyEvent(event, crdt)
+export function setMachineTitle(machineId: ElementId, title: string) {
+  handleSingleOperation(
+    {
+      type: operationType.update,
+      key: 'machines',
+      childOperation: {
+        type: operationType.updateElement,
+        id: machineId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'title',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: title,
+          }
+        }
+      }
+    },
+  )
+}
 
-  const newReplicationState = {
-    replicaId,
-    sequence: event.localSequence,
-    crdt: newCrdt,
-    version: event.version,
-    observed: observed,
-  }
-  const newLocalEvents = [...localEvents, event]
-
-  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [event])
-
-  useAppStore.setState({
-    replicationState: newReplicationState,
-    localEvents: newLocalEvents,
-    ...calculatedChanges,
-  })
-
-  submitEvents(event.localSequence, [event])
+export function setMachineDescription(machineId: ElementId, description: string) {
+  handleSingleOperation(
+    {
+      type: operationType.update,
+      key: 'machines',
+      childOperation: {
+        type: operationType.updateElement,
+        id: machineId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'description',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: description,
+          }
+        }
+      }
+    },
+  )
 }
