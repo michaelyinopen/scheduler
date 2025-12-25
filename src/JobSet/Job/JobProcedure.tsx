@@ -50,7 +50,7 @@ const JobProcedureDraggable = memo(({ ref, jobId, procedureId, ...rest }: JobPro
       open={open}
       onOpenChange={setOpen}
     >
-      <Popover.Trigger nativeButton={false} render={<div className={jobClasses.jobProcedure} />}>
+      <Popover.Trigger nativeButton={false} className={jobClasses.jobProcedure} render={<div />}>
         <Procedure
           ref={ref}
           jobId={jobId}

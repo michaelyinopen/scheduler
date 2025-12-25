@@ -33,7 +33,9 @@ export const MachineHeader = ({ id, className, inline, canEdit }: MachineHeaderP
     <Popover.Root openOnHover={!isExpandMode || !canEdit}>
       <Popover.Trigger
         nativeButton={isExpandMode && canEdit}
-        render={<div className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName + expandModeClassName} />}>
+        className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName + expandModeClassName}
+        render={isExpandMode && canEdit ? <button /> : <div />}
+      >
         {title}
       </Popover.Trigger>
       {isExpandMode && canEdit
