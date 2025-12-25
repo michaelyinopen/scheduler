@@ -70,7 +70,6 @@ function expandModePopup(id: ElementId, title: string | undefined, description: 
           <Popover.Arrow className={baseClasses.arrow}>
             <ArrowSvg />
           </Popover.Arrow>
-          <Popover.Title className={baseClasses.popupTitle}>Machine options</Popover.Title>
           <Popover.Description className={baseClasses.popupDescription + ' ' + baseClasses.popupDescriptionExpandMode} render={<div />}>
             <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
               <Input
