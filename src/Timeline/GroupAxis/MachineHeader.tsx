@@ -1,24 +1,28 @@
 import { useShallow } from 'zustand/shallow'
 import { Popover } from '@base-ui-components/react'
+import { Field, Input } from '@base-ui/react'
 import type { ElementId, MachineValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import baseClasses from '../../components/base.module.css'
+import fieldClasses from '../../components/Field.module.css'
 import classes from '../Timeline.module.css'
 
 export type MachineHeaderProps = {
   id: ElementId
   className?: string
   inline?: boolean
+  canEdit?: boolean
 }
 
-export const MachineHeader = ({ id, className, inline }: MachineHeaderProps) => {
-  const [title, description] = useAppStore(useShallow(state => {
+export const MachineHeader = ({ id, className, inline, canEdit }: MachineHeaderProps) => {
+  const [title, description, isExpandMode] = useAppStore(useShallow(state => {
     const machine = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
     const title = machine?.value.title?.value
     const description = machine?.value.description?.value
+    const isExpandMode = state.isExpandMode
 
-    return [title, description]
+    return [title, description, isExpandMode]
   }))
 
   const propsClassName = className ? ' ' + className : ''
@@ -29,18 +33,62 @@ export const MachineHeader = ({ id, className, inline }: MachineHeaderProps) => 
       <Popover.Trigger nativeButton={false} render={<div className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName} />}>
         {title}
       </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Positioner side='top' sideOffset={4}>
-          <Popover.Popup className={baseClasses.popup + ' ' + baseClasses.tooltip}>
-            <Popover.Arrow className={baseClasses.arrow}>
-              <ArrowSvg />
-            </Popover.Arrow>
-            <Popover.Description className={baseClasses.popupDescription}>
-              {description}
-            </Popover.Description>
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
+      {isExpandMode && canEdit
+        ? expandModePopup(id, title, description)
+        : tooltipPopup(description)}
     </Popover.Root>
+  )
+}
+
+function tooltipPopup(description: string | undefined) {
+  return (
+    <Popover.Portal>
+      <Popover.Positioner side='top' sideOffset={4}>
+        <Popover.Popup className={baseClasses.popup + ' ' + baseClasses.tooltip}>
+          <Popover.Arrow className={baseClasses.arrow}>
+            <ArrowSvg />
+          </Popover.Arrow>
+          <Popover.Description className={baseClasses.popupDescription}>
+            {description}
+          </Popover.Description>
+        </Popover.Popup>
+      </Popover.Positioner>
+    </Popover.Portal>
+  )
+}
+
+function expandModePopup(id, title: string | undefined, description: string | undefined) {
+  return (
+    <Popover.Portal>
+      <Popover.Positioner sideOffset={8} align='start'>
+        <Popover.Popup className={baseClasses.popup}>
+          <Popover.Arrow className={baseClasses.arrow}>
+            <ArrowSvg />
+          </Popover.Arrow>
+          <Popover.Description className={baseClasses.popupDescription + ' ' + baseClasses.popupDescriptionExpandMode} render={<div />}>
+            <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
+              <Input
+                id={`machine-title-input-${id}`}
+                className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
+                placeholder='Title'
+                value={title}
+                onChange={e => setJobTitle(id, e.target.value)}
+              />
+              <Field.Label htmlFor={`machine-title-input-${id}`} className={fieldClasses.label}>Title</Field.Label>
+            </Field.Root>
+            <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
+              <Input
+                id={`machine-description-input-${id}`}
+                className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
+                placeholder='Description'
+                value={title}
+                onChange={e => setJobTitle(id, e.target.value)}
+              />
+              <Field.Label htmlFor={`machine-description-input-${id}`} className={fieldClasses.label}>Description</Field.Label>
+            </Field.Root>
+          </Popover.Description>
+        </Popover.Popup>
+      </Popover.Positioner>
+    </Popover.Portal>
   )
 }

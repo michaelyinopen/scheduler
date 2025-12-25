@@ -100,16 +100,16 @@ function popoverDescriptionExapndMode(
   jobTextColor: string | undefined
 ) {
   return (
-    <Popover.Description className={baseClasses.popupDescription + ' ' + jobClasses.jobOptionExpandModeDetail} render={<div />}>
+    <Popover.Description className={baseClasses.popupDescription + ' ' + baseClasses.popupDescriptionExpandMode} render={<div />}>
       <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
         <Input
-          id='title-input'
+          id={`job-title-input-${id}`}
           className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
           placeholder='Title'
           value={jobTitle}
           onChange={e => setJobTitle(id, e.target.value)}
         />
-        <Field.Label htmlFor='title-input' className={fieldClasses.label}>Title</Field.Label>
+        <Field.Label htmlFor={`job-title-input-${id}`} className={fieldClasses.label}>Title</Field.Label>
       </Field.Root>
       <Field.Root className={fieldClasses.field}>
         <div className={'flex--center' + ' ' + fieldClasses.control}>

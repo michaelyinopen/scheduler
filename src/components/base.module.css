@@ -123,6 +123,14 @@
   color: var(--color-gray-900);
 }
 
+.popup-description--expand-mode {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
 .completed-icon {
   fill: #22A06B;
   width: 1.5rem;

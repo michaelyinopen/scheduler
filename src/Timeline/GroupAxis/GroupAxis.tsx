@@ -14,7 +14,7 @@ const GroupAxis = memo(() => {
   return (
     <ol className={'list--unstyled' + ' ' + classes.groupAxis}>
       {machineIds?.map(id => {
-        return (<li className={classes.groupHeader} key={id}><MachineHeader id={id} /></li>)
+        return (<li className={classes.groupHeader} key={id}><MachineHeader id={id} canEdit={true} /></li>)
       })}
     </ol>
   )
