@@ -1,8 +1,8 @@
 import { memo } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { machineIdsSelector, useAppStore } from '../store'
-import classes from './Timeline.module.css'
 import { Spinner } from '../components/Spinner'
+import classes from './Timeline.module.css'
 
 export type TimelineProps = {
   children: React.ReactNode

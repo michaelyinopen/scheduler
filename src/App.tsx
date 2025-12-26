@@ -1,12 +1,12 @@
 import { WithDndContext } from './WithDndContext'
 import { WithConnection } from './WithConnection'
 import { WithErrorBoundary } from './WithErrorBoundary'
-import { Timeline, GroupAxis, ScheduleBody, TimeAxis } from './Timeline'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { TitleAndDescription } from './JobSet/TitleAndDescription'
+import { Timeline, GroupAxis, ScheduleBody, TimeAxis } from './Timeline'
 import { JobSet, EditModes } from './JobSet'
 import './theme.css'
 import './App.css'
-import { TitleAndDescription } from './JobSet/TitleAndDescription'
 
 function App() {
   return (

@@ -484,3 +484,137 @@ export function setMachineDescription(machineId: ElementId, description: string)
     },
   )
 }
+
+export function insertMachineAtTheEnd() {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const machines = crdt.machines
+  const localEvents = useAppStore.getState().localEvents
+
+  // insert machine
+  const insertVersion = nextVersion(replicaId, version)
+  const insertSequence = sequence + 1
+  const machineId = `${replicaId}.${insertSequence}` as const
+
+  const activeValueBlocks = machines === undefined
+    ? undefined
+    : getActiveValueBlocks(machines)
+
+  const originLeftIndex: number | undefined = activeValueBlocks === undefined
+    ? undefined
+    : activeValueBlocks[activeValueBlocks.length - 1]?.indexInYata
+
+  const originLeft = originLeftIndex === undefined
+    ? undefined
+    : machines!.blocks[originLeftIndex]?.id
+
+  const originRight = originLeftIndex === undefined
+    ? undefined
+    : machines!.blocks[originLeftIndex + 1]?.id
+
+  const insertEvent = {
+    version: insertVersion,
+    origin: replicaId,
+    originSequence: insertSequence,
+    localSequence: insertSequence,
+    operation: {
+      type: operationType.update,
+      key: 'machines',
+      childOperation:
+      {
+        type: operationType.insertElement,
+        id: machineId,
+        originLeft,
+        originRight,
+        elementValue: {},
+      }
+    }
+  }
+
+  // machine title
+  const titleVersion = nextVersion(replicaId, insertVersion)
+  const titleSequence = insertSequence + 1
+  const machineNumber = machines === undefined // 1 + the number of value elements (including deleted elements)
+    ? 1
+    : machines.blocks.reduce((acc, block) => {
+      const element = machines.elements[block.id]
+
+      return isValueElement(element)
+        ? acc + 1
+        : acc
+    }, 1)
+
+  const titleEvent: Event<Operation> = {
+    version: titleVersion,
+    origin: replicaId,
+    originSequence: titleSequence,
+    localSequence: titleSequence,
+    operation: {
+      type: operationType.update,
+      key: 'machines',
+      childOperation: {
+        type: operationType.updateElement,
+        id: machineId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'title',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: `M${machineNumber}`,
+          }
+        }
+      }
+    },
+  }
+
+  // machine description
+  const descriptionVersion = nextVersion(replicaId, titleVersion)
+  const descriptionSequence = titleSequence + 1
+
+  const descriptionEvent: Event<Operation> = {
+    version: descriptionVersion,
+    origin: replicaId,
+    originSequence: descriptionSequence,
+    localSequence: descriptionSequence,
+    operation: {
+      type: operationType.update,
+      key: 'machines',
+      childOperation: {
+        type: operationType.updateElement,
+        id: machineId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'description',
+          childOperation: {
+            type: operationType.assign,
+            timestamp: new Date().getTime(),
+            value: `Machine ${machineNumber}`,
+          }
+        }
+      }
+    },
+  }
+
+  let newCrdt: FormData = applyEvent(insertEvent, crdt)
+  newCrdt = applyEvent(titleEvent, newCrdt)
+  newCrdt = applyEvent(descriptionEvent, newCrdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: descriptionSequence,
+    crdt: newCrdt,
+    version: descriptionVersion,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, insertEvent, titleEvent, descriptionEvent]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [insertEvent, titleEvent, descriptionEvent])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(descriptionSequence, [insertEvent, titleEvent, descriptionEvent])
+}
