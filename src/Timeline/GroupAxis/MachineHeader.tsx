@@ -20,12 +20,16 @@ export type MachineHeaderProps = {
 export const MachineHeader = ({ id, className, inline, canEdit = false }: MachineHeaderProps) => {
   const [title, description, isExpandMode] = useAppStore(useShallow(state => {
     const machineElement = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
+    const title = machineElement?.value.title?.value
+    const description = machineElement?.value.description?.value
+
     const isDeleted = machineElement?.isDeleted
-    const title = isDeleted ? emptyMachineTitle : machineElement?.value.title?.value
-    const description = isDeleted ? 'Deleted machine' : machineElement?.value.description?.value
+    const finalTitle = isDeleted ? emptyMachineTitle : title
+    const finalDescription = isDeleted ? `Deleted (${title} — ${description})` : description
+
     const isExpandMode = state.isExpandMode
 
-    return [title, description, isExpandMode]
+    return [finalTitle, finalDescription, isExpandMode]
   }))
 
   const propsClassName = className ? ' ' + className : ''
