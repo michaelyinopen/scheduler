@@ -11,7 +11,7 @@ function wrapLwwRegisterValue<T>(value: T): LwwRegister<T> {
 
 const example1: FormData = {
   title: wrapLwwRegisterValue('Example 1: Schedule',),
-  description: wrapLwwRegisterValue(
+  description: wrapLwwRegisterValue( // hard coded in client so to insert links
     "Welcome to Scheduler for the job shop scheduling problem.\n" +
     "This example has 3 jobs. Each job contains several procedures that have to be performed on specified machines, in order.\n" +
     "Drag the procedures to the timeline, until all procedures are scheduled and there are no conflicts."
