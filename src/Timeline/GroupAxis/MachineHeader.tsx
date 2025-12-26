@@ -1,9 +1,10 @@
 import { useShallow } from 'zustand/shallow'
 import { Popover } from '@base-ui-components/react'
-import { Field, Input } from '@base-ui/react'
+import { Button, Field, Input } from '@base-ui/react'
 import type { ElementId, MachineValue, ValueElement } from '@michaelyinopen/scheduler-common'
-import { setMachineDescription, setMachineTitle, useAppStore } from '../../store'
+import { deleteMachine, setMachineDescription, setMachineTitle, useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
+import { DeleteIcon } from '../../components/DeleteIcon'
 import baseClasses from '../../components/base.module.css'
 import fieldClasses from '../../components/Field.module.css'
 import classes from '../Timeline.module.css'
@@ -15,7 +16,7 @@ export type MachineHeaderProps = {
   canEdit?: boolean
 }
 
-export const MachineHeader = ({ id, className, inline, canEdit }: MachineHeaderProps) => {
+export const MachineHeader = ({ id, className, inline, canEdit = false }: MachineHeaderProps) => {
   const [title, description, isExpandMode] = useAppStore(useShallow(state => {
     const machine = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
     const title = machine?.value.title?.value
@@ -91,6 +92,14 @@ function expandModePopup(id: ElementId, title: string | undefined, description: 
               />
               <Field.Label htmlFor={`machine-description-input-${id}`} className={fieldClasses.label}>Description</Field.Label>
             </Field.Root>
+            <Button
+              className={baseClasses.iconButton + ' ' + 'pointer'}
+              aria-label={`Delete machine ${title ?? ''}`}
+              title={`Delete machine ${title ?? ''}`}
+              onClick={() => deleteMachine(id)}
+            >
+              <DeleteIcon />
+            </Button>
           </Popover.Description>
         </Popover.Popup>
       </Popover.Positioner>

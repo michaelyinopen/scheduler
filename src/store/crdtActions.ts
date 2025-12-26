@@ -618,3 +618,17 @@ export function insertMachineAtTheEnd() {
 
   submitEvents(descriptionSequence, [insertEvent, titleEvent, descriptionEvent])
 }
+
+export function deleteMachine(machineId: ElementId) {
+  handleSingleOperation(
+    {
+      type: operationType.update,
+      key: 'machines',
+      childOperation:
+      {
+        type: operationType.deleteElement,
+        id: machineId,
+      }
+    }
+  )
+}
