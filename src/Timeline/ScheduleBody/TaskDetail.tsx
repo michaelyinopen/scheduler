@@ -49,7 +49,7 @@ const TaskDetail = memo(({ jobId, procedureId }: TaskDetailProps) => {
   return (
     <Popover.Portal>
       <Popover.Positioner sideOffset={6} align='start'>
-        <Popover.Popup className={baseClasses.popup}>
+        <Popover.Popup className={baseClasses.popup + ' ' + baseClasses.popupStrong}>
           <Popover.Arrow className={baseClasses.arrow}>
             <ArrowSvg />
           </Popover.Arrow>

@@ -57,8 +57,14 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    outline: 1px solid var(--color-gray-300);
+    outline: 1px solid var(--color-gray-400);
     outline-offset: -1px;
+  }
+}
+
+.popup.popup--strong {
+  @media (prefers-color-scheme: dark) {
+    outline: 1px solid var(--color-gray-600);
   }
 }
 
@@ -105,7 +111,13 @@
 
 .arrow-inner-stroke {
   @media (prefers-color-scheme: dark) {
-    fill: var(--color-gray-300);
+    fill: var(--color-gray-400);
+  }
+}
+
+.popup--strong .arrow-inner-stroke {
+  @media (prefers-color-scheme: dark) {
+    fill: var(--color-gray-600);
   }
 }
 

@@ -66,7 +66,7 @@ function expandModePopup(id: ElementId, title: string | undefined, description: 
   return (
     <Popover.Portal>
       <Popover.Positioner sideOffset={8} align='start'>
-        <Popover.Popup className={baseClasses.popup}>
+        <Popover.Popup className={baseClasses.popup + ' ' + baseClasses.popupStrong}>
           <Popover.Arrow className={baseClasses.arrow}>
             <ArrowSvg />
           </Popover.Arrow>
