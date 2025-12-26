@@ -1,6 +1,7 @@
 import { type ElementId, type JobValue, type MachineValue, type ProcedureValue, type ValueElement } from '@michaelyinopen/scheduler-common'
 import { useAppStore } from '../store'
 import classes from './Procedure.module.css'
+import { emptyMachineTitle } from '../constants'
 
 export type ProcedureMachineLabelProps = {
   jobId: ElementId
@@ -17,8 +18,13 @@ export const ProcedureMachineLabel = ({ jobId, procedureId }: ProcedureMachineLa
       return undefined
     }
 
-    const machine = (state.replicationState?.crdt.machines?.elements[machineId] as ValueElement<MachineValue> | undefined)?.value
-    return machine?.title?.value
+    const machineElement: ValueElement<MachineValue> | undefined = state.replicationState?.crdt.machines?.elements[machineId]
+
+    if (machineElement === undefined || machineElement?.isDeleted) {
+      return emptyMachineTitle
+    }
+
+    return machineElement?.value.title?.value
   })
 
   return (

@@ -8,6 +8,7 @@ import { DeleteIcon } from '../../components/DeleteIcon'
 import baseClasses from '../../components/base.module.css'
 import fieldClasses from '../../components/Field.module.css'
 import classes from '../Timeline.module.css'
+import { emptyMachineTitle } from '../../constants'
 
 export type MachineHeaderProps = {
   id: ElementId
@@ -18,9 +19,10 @@ export type MachineHeaderProps = {
 
 export const MachineHeader = ({ id, className, inline, canEdit = false }: MachineHeaderProps) => {
   const [title, description, isExpandMode] = useAppStore(useShallow(state => {
-    const machine = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
-    const title = machine?.value.title?.value
-    const description = machine?.value.description?.value
+    const machineElement = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
+    const isDeleted = machineElement?.isDeleted
+    const title = isDeleted ? emptyMachineTitle : machineElement?.value.title?.value
+    const description = isDeleted ? 'Deleted machine' : machineElement?.value.description?.value
     const isExpandMode = state.isExpandMode
 
     return [title, description, isExpandMode]

@@ -41,3 +41,5 @@ export const exampleDescriptions = {
 }
 
 export const colorPickerDebounceDelayMs = 200
+
+export const emptyMachineTitle = 'M‒' // figure dash, also used for deleted machine
