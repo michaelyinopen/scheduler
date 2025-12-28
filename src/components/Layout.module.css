@@ -126,9 +126,9 @@
 
 .Icon {
   transition: transform 0.2s ease;
-
+  
   &[data-popup-open] {
-    transform: rotate(180deg);
+    transform: scaleY(-1);
   }
 }
 
