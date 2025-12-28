@@ -2,13 +2,13 @@ import { useShallow } from 'zustand/shallow'
 import { Popover } from '@base-ui-components/react'
 import { Button, Field, Input } from '@base-ui/react'
 import type { ElementId, MachineValue, ValueElement } from '@michaelyinopen/scheduler-common'
+import { emptyMachineTitle } from '../../constants'
 import { deleteMachine, setMachineDescription, setMachineTitle, useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import { DeleteIcon } from '../../components/DeleteIcon'
 import baseClasses from '../../components/base.module.css'
 import fieldClasses from '../../components/Field.module.css'
 import classes from '../Timeline.module.css'
-import { emptyMachineTitle } from '../../constants'
 
 export type MachineHeaderProps = {
   id: ElementId
@@ -18,18 +18,26 @@ export type MachineHeaderProps = {
 }
 
 export const MachineHeader = ({ id, className, inline, canEdit = false }: MachineHeaderProps) => {
-  const [title, description, isExpandMode] = useAppStore(useShallow(state => {
+  const [title, formattedTitle, description, isExpandMode] = useAppStore(useShallow(state => {
     const machineElement = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
     const title = machineElement?.value.title?.value
+    const isTitleAnEmptyString = machineElement?.value.title?.value === ''
     const description = machineElement?.value.description?.value
 
     const isDeleted = machineElement?.isDeleted
-    const finalTitle = isDeleted ? emptyMachineTitle : title
+
+    let formattedTitle = title
+    if (isDeleted) {
+      formattedTitle = emptyMachineTitle
+    }
+    if (isTitleAnEmptyString) {
+      formattedTitle = '\u200b' // zero width space
+    }
     const finalDescription = isDeleted ? `Deleted (${title} — ${description})` : description
 
     const isExpandMode = state.isExpandMode
 
-    return [finalTitle, finalDescription, isExpandMode]
+    return [title, formattedTitle, finalDescription, isExpandMode]
   }))
 
   const propsClassName = className ? ' ' + className : ''
@@ -43,7 +51,7 @@ export const MachineHeader = ({ id, className, inline, canEdit = false }: Machin
         className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName + expandModeClassName}
         render={isExpandMode && canEdit ? <button /> : <div />}
       >
-        {title}
+        {formattedTitle}
       </Popover.Trigger>
       {isExpandMode && canEdit
         ? expandModePopup(id, title, description)

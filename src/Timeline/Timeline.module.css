@@ -51,10 +51,11 @@
 
 .machine-header {
   font-weight: 500;
+  min-width: 1.4em;
 }
 
 .machine-header--inline {
-  display: inline;
+  display: inline-block;
 }
 
 .machine-header--expand-mode {

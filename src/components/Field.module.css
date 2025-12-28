@@ -1,6 +1,6 @@
 .field {
   position: relative;
-  padding: 15px 0 0;
+  padding: 0.9375rem 0 0 0;
 }
 
 .field.field--input::after {
@@ -34,8 +34,8 @@
   width: stretch;
   border: 0;
   outline: 0;
-  font-size: 16px;
-  padding: 7px 0;
+  font-size: 1rem;
+  padding: 0.4375rem 0;
   background: transparent;
   transition: border-color 200ms ease;
   line-height: normal;
@@ -55,9 +55,9 @@
 }
 
 .input:placeholder-shown ~ .label {
-  font-size: 16px;
+  font-size: 1rem;
   cursor: text;
-  top: 20px;
+  top: 1.25rem;
   user-select: none;
 }
 
@@ -66,7 +66,7 @@
   position: absolute;
   top: 0;
   display: block;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--color-gray-700);
   transition: all 200ms ease;
 }
@@ -93,7 +93,7 @@
   width: 100%;
   border: 0;
   outline: 0;
-  margin: 7px 0;
+  margin: 0.4375rem 0;
 }
 
 .control:focus-within ~ .label {
