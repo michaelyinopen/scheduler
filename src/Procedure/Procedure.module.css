@@ -38,13 +38,13 @@
   color: var(--color-gray-900);
   background-color: var(--color-gray-100);
   clip-path: polygon(0% 100%, 0% 0%, 100% 0%, calc(100% - 1rem) 100%);
-  white-space: nowrap;
+  white-space: pre;
 }
 
 .procedure-job-label {
   padding: 0.5rem 0.5rem 2px 0.5rem;
   align-self: center;
-  white-space: nowrap;
+  white-space: pre;
 }
 
 .procedure-sequence-label {

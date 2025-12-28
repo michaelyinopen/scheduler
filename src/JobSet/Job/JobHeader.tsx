@@ -12,14 +12,18 @@ export type JobHeaderProps = {
 }
 
 export const JobHeader = ({ id, inline, className, puncuation }: JobHeaderProps) => {
-  const [jobTitle, jobColor, jobTextColor] = useAppStore(useShallow(state => {
+  const [formattedJobTitle, jobColor, jobTextColor] = useAppStore(useShallow(state => {
     const job = (state.replicationState?.crdt.jobs?.elements[id] as ValueElement<JobValue> | undefined)?.value
     const jobTitle = job?.title?.value
+    const formattedJobTitle =
+      jobTitle === undefined || jobTitle === ''
+        ? '\u200b' // zero width space
+        : jobTitle
     const jobColor = job?.color?.value
     const jobTextColor = job?.color?.value !== undefined && job?.color?.value.length >= 6
       ? pickTextColor(job?.color?.value)
       : undefined
-    return [jobTitle, jobColor, jobTextColor]
+    return [formattedJobTitle, jobColor, jobTextColor]
   }))
 
   const propsClassName = className ? ' ' + className : ''
@@ -32,7 +36,7 @@ export const JobHeader = ({ id, inline, className, puncuation }: JobHeaderProps)
       </span>
       <span>
         <span className={jobClasses.jobTitle} style={{ backgroundColor: jobColor, color: jobTextColor }}>
-          {jobTitle}
+          {formattedJobTitle}
         </span>
         {puncuation}
       </span>

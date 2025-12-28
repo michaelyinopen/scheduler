@@ -15,7 +15,7 @@ export const ProcedureMachineLabel = ({ jobId, procedureId }: ProcedureMachineLa
     const machineId = procedure?.machineId?.value
 
     if (machineId === undefined) {
-      return undefined
+      return '\u200b' // zero width space
     }
 
     const machineElement: ValueElement<MachineValue> | undefined = state.replicationState?.crdt.machines?.elements[machineId]
@@ -24,7 +24,13 @@ export const ProcedureMachineLabel = ({ jobId, procedureId }: ProcedureMachineLa
       return emptyMachineTitle
     }
 
-    return machineElement?.value.title?.value
+    const title = machineElement?.value.title?.value
+
+    if (title === undefined || title === '') {
+      return '\u200b' // zero width space
+    }
+
+    return title
   })
 
   return (

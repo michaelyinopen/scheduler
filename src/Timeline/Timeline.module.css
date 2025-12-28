@@ -52,6 +52,7 @@
 .machine-header {
   font-weight: 500;
   min-width: 1.4em;
+  white-space: pre;
 }
 
 .machine-header--inline {

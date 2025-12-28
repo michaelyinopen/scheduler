@@ -119,14 +119,17 @@ function popoverDescriptionExapndMode(
           >
             {jobColor}
             <Button
+              aria-label='Change color'
               className={jobClasses.changeColorIconButton + ' ' + 'pointer'}
               onClick={() => { changeJobColorToNextPresetColor(id) }}
               style={{ '--job-text-color': jobTextColor } as React.CSSProperties}
+              title='Change color'
             >
               <RenewIcon />
             </Button>
           </span>
           <input
+            aria-label='Choose color'
             type='color'
             value={jobColor}
             onChange={e => {
