@@ -37,11 +37,11 @@
   }
 
   &:active {
-    background-color: var(--color-gray-200);
+    background-color: var(--color-gray-400);
   }
 
   &[data-pressed] {
-    background-color: var(--color-gray-100);
+    background-color: var(--color-gray-300);
     color: var(--color-gray-900);
   }
 }
