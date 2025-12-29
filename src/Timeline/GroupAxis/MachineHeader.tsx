@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { Popover } from '@base-ui-components/react'
 import { Button, Field, Input } from '@base-ui/react'
@@ -17,7 +18,7 @@ export type MachineHeaderProps = {
   canEdit?: boolean
 }
 
-export const MachineHeader = ({ id, className, inline, canEdit = false }: MachineHeaderProps) => {
+const MachineHeader = memo(({ id, className, inline, canEdit = false }: MachineHeaderProps) => {
   const [title, formattedTitle, description, isExpandMode] = useAppStore(useShallow(state => {
     const machineElement = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
     const title = machineElement?.value.title?.value
@@ -58,7 +59,7 @@ export const MachineHeader = ({ id, className, inline, canEdit = false }: Machin
         : tooltipPopup(description)}
     </Popover.Root>
   )
-}
+})
 
 function tooltipPopup(description: string | undefined) {
   return (
@@ -88,23 +89,21 @@ function expandModePopup(id: ElementId, title: string | undefined, description: 
           <Popover.Description className={baseClasses.popupDescription + ' ' + baseClasses.popupDescriptionExpandMode} render={<div />}>
             <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
               <Input
-                id={`machine-title-input-${id}`}
                 className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
                 placeholder='Title'
                 value={title}
                 onChange={e => setMachineTitle(id, e.target.value)}
               />
-              <Field.Label htmlFor={`machine-title-input-${id}`} className={fieldClasses.label}>Title</Field.Label>
+              <Field.Label className={fieldClasses.label}>Title</Field.Label>
             </Field.Root>
             <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
               <Input
-                id={`machine-description-input-${id}`}
                 className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
                 placeholder='Description'
                 value={description}
                 onChange={e => setMachineDescription(id, e.target.value)}
               />
-              <Field.Label htmlFor={`machine-description-input-${id}`} className={fieldClasses.label}>Description</Field.Label>
+              <Field.Label className={fieldClasses.label}>Description</Field.Label>
             </Field.Root>
             <Button
               className={baseClasses.iconButton + ' ' + 'pointer'}
@@ -120,3 +119,6 @@ function expandModePopup(id: ElementId, title: string | undefined, description: 
     </Popover.Portal>
   )
 }
+
+MachineHeader.displayName = 'MachineHeader'
+export { MachineHeader }

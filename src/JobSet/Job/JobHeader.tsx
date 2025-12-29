@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { type ElementId, type JobValue, type ValueElement } from '@michaelyinopen/scheduler-common'
 import { pickTextColor } from '../../utils/jobColors'
@@ -11,7 +12,7 @@ export type JobHeaderProps = {
   puncuation?: string
 }
 
-export const JobHeader = ({ id, inline, className, puncuation }: JobHeaderProps) => {
+const JobHeader = memo(({ id, inline, className, puncuation }: JobHeaderProps) => {
   const [formattedJobTitle, jobColor, jobTextColor] = useAppStore(useShallow(state => {
     const job = (state.replicationState?.crdt.jobs?.elements[id] as ValueElement<JobValue> | undefined)?.value
     const jobTitle = job?.title?.value
@@ -42,4 +43,7 @@ export const JobHeader = ({ id, inline, className, puncuation }: JobHeaderProps)
       </span>
     </div>
   )
-}
+})
+
+JobHeader.displayName = 'JobHeader'
+export { JobHeader } 

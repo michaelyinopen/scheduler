@@ -103,13 +103,12 @@ function popoverDescriptionExapndMode(
     <Popover.Description className={baseClasses.popupDescription + ' ' + baseClasses.popupDescriptionExpandMode} render={<div />}>
       <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
         <Input
-          id={`job-title-input-${id}`}
           className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
           placeholder='Title'
           value={jobTitle}
           onChange={e => setJobTitle(id, e.target.value)}
         />
-        <Field.Label htmlFor={`job-title-input-${id}`} className={fieldClasses.label}>Title</Field.Label>
+        <Field.Label className={fieldClasses.label}>Title</Field.Label>
       </Field.Root>
       <Field.Root className={fieldClasses.field}>
         <div className={'flex--center' + ' ' + fieldClasses.control}>
@@ -129,6 +128,7 @@ function popoverDescriptionExapndMode(
             </Button>
           </span>
           <input
+            id={`job-color-${id}`}
             aria-label='Choose color'
             type='color'
             value={jobColor}
@@ -138,7 +138,7 @@ function popoverDescriptionExapndMode(
             }}
           />
         </div>
-        <Field.Label className={fieldClasses.label}>Color</Field.Label>
+        <Field.Label htmlFor={`job-color-${id}`} className={fieldClasses.label}>Color</Field.Label>
       </Field.Root>
       <Button
         className={baseClasses.iconButton + ' ' + 'pointer'}

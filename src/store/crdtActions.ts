@@ -632,3 +632,26 @@ export function deleteMachine(machineId: ElementId) {
     }
   )
 }
+
+export function deleteProcedure(jobId: ElementId, procedureId: ElementId) {
+  handleSingleOperation(
+    {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation:
+      {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'procedures',
+          childOperation:
+          {
+            type: operationType.deleteElement,
+            id: procedureId,
+          }
+        }
+      }
+    }
+  )
+}
