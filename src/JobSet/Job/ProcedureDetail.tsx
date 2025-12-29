@@ -1,10 +1,12 @@
 import { memo } from 'react'
 import { useShallow } from 'zustand/shallow'
+import { Popover } from '@base-ui/react'
 import { type ElementId, type JobValue, type ProcedureValue, type ValueElement } from '@michaelyinopen/scheduler-common'
 import { msToFormattedHourMinute } from '../../utils/time'
 import { prodcedureIdsSelector, useAppStore } from '../../store'
 import { MachineHeader } from '../../Timeline'
 import { JobHeader } from './JobHeader'
+import baseClasses from '../../components/base.module.css'
 
 export type ProcedureDetailProps = {
   jobId: ElementId
@@ -12,7 +14,7 @@ export type ProcedureDetailProps = {
 }
 
 const ProcedureDetail = memo(({ jobId, procedureId }: ProcedureDetailProps) => {
-  const [machineId, processignTimsMs, sequence] = useAppStore(useShallow(state => {
+  const [machineId, processignTimsMs, sequence, isExpandMode] = useAppStore(useShallow(state => {
     const job = (state.replicationState?.crdt.jobs?.elements[jobId] as ValueElement<JobValue> | undefined)?.value
     const procedure = (job?.procedures?.elements[procedureId] as ValueElement<ProcedureValue> | undefined)?.value
 
@@ -22,40 +24,95 @@ const ProcedureDetail = memo(({ jobId, procedureId }: ProcedureDetailProps) => {
     const procedureIds = prodcedureIdsSelector(jobId, job?.procedures)
     const sequence = procedureIds.indexOf(procedureId) + 1
 
-    return [machineId, processignTimsMs, sequence]
+    const isExpandMode = state.isExpandMode
+
+    return [machineId, processignTimsMs, sequence, isExpandMode]
   }))
 
-  return (
-    <table className='table--unstyled'>
-      <tbody>
-        {machineId && (<tr>
-          <th>Machine:</th>
-          <td>
-            <MachineHeader id={machineId} inline={true} />
-          </td>
-        </tr>)}
-        <tr>
-          <th>Job:</th>
-          <td>
-            <JobHeader id={jobId} inline={true} />
-          </td>
-        </tr>
-        <tr>
-          <th>Sequence:</th>
-          <td>
-            {sequence}
-          </td>
-        </tr>
-        {processignTimsMs !== undefined && processignTimsMs !== 0 && <tr>
-          <th>Time:</th>
-          <td>
-            {msToFormattedHourMinute(processignTimsMs)}
-          </td>
-        </tr>}
-      </tbody>
-    </table>
-  )
+  return isExpandMode
+    ? popoverDescriptionExapndMode(jobId, machineId, processignTimsMs, sequence)
+    : popoverDescription(jobId, machineId, processignTimsMs, sequence)
 })
+
+function popoverDescription(
+  jobId: ElementId,
+  machineId: ElementId | undefined,
+  processignTimsMs: number | undefined,
+  sequence: number
+) {
+  return (
+    <Popover.Description className={baseClasses.popupDescription} render={<div />}>
+      <table className='table--unstyled'>
+        <tbody>
+          {machineId && (<tr>
+            <th>Machine:</th>
+            <td>
+              <MachineHeader id={machineId} inline={true} />
+            </td>
+          </tr>)}
+          <tr>
+            <th>Job:</th>
+            <td>
+              <JobHeader id={jobId} inline={true} />
+            </td>
+          </tr>
+          <tr>
+            <th>Sequence:</th>
+            <td>
+              {sequence}
+            </td>
+          </tr>
+          {processignTimsMs !== undefined && processignTimsMs !== 0 && <tr>
+            <th>Time:</th>
+            <td>
+              {msToFormattedHourMinute(processignTimsMs)}
+            </td>
+          </tr>}
+        </tbody>
+      </table>
+    </Popover.Description>
+  )
+}
+
+function popoverDescriptionExapndMode(
+  jobId: ElementId,
+  machineId: ElementId | undefined,
+  processignTimsMs: number | undefined,
+  sequence: number
+) {
+  return (
+    <Popover.Description className={baseClasses.popupDescription} render={<div />}>
+      <table className='table--unstyled'>
+        <tbody>
+          {machineId && (<tr>
+            <th>Machine:</th>
+            <td>
+              <MachineHeader id={machineId} inline={true} />
+            </td>
+          </tr>)}
+          <tr>
+            <th>Job:</th>
+            <td>
+              <JobHeader id={jobId} inline={true} />
+            </td>
+          </tr>
+          <tr>
+            <th>Sequence:</th>
+            <td>
+              {sequence}
+            </td>
+          </tr>
+          {processignTimsMs !== undefined && processignTimsMs !== 0 && <tr>
+            <th>Time:</th>
+            <td>
+              {msToFormattedHourMinute(processignTimsMs)}
+            </td>
+          </tr>}
+        </tbody>
+      </table>
+    </Popover.Description>
+  )
+}
 
 ProcedureDetail.displayName = 'ProcedureDetail'
 export { ProcedureDetail }
