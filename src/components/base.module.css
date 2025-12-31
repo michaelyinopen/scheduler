@@ -19,7 +19,7 @@
   }
 
   &:active {
-    background-color: var(--color-gray-200);
+    background-color: var(--color-gray-300);
   }
 
   &[data-popup-open] {
