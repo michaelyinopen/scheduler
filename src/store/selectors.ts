@@ -1,8 +1,16 @@
-import { type ElementId, type ProcedureValue, type Yata, getActiveElementIds } from '@michaelyinopen/scheduler-common'
-import { memoizeOne } from '../utils/memoizeOne';
-import type { TaskPositions } from '../utils/taskStacking';
-import { calculateJobCompletionResult, validateTask } from '../utils/validateTask';
-import type { AppState } from './useAppStore';
+import {
+  type ElementId,
+  type MachineValue,
+  type ProcedureValue,
+  type ValueElement,
+  type Yata,
+  getActiveElementIds
+} from '@michaelyinopen/scheduler-common'
+import { memoizeOne } from '../utils/memoizeOne'
+import type { TaskPositions } from '../utils/taskStacking'
+import { calculateJobCompletionResult, validateTask } from '../utils/validateTask'
+import type { AppState } from './useAppStore'
+import { arraysEqualWithComparer } from '../utils/arrayEqivalent'
 
 // for floating point number comparisons, deceided to use reference of 0.01ms
 const tolerance = 0.01
@@ -106,4 +114,63 @@ export const jobCompletionResultSelector = (
     procedureIds,
     taskPositions
   )
+}
+
+export type MachineTitle = {
+  machineId: ElementId,
+  title: string | undefined,
+}
+
+function machineTitleEquals(a: MachineTitle, b: MachineTitle) {
+  return a.machineId === b.machineId && a.title === b.title
+}
+
+const machineTitlesArrayComparer = arraysEqualWithComparer(machineTitleEquals)
+
+let previousMachineTitlesArray: MachineTitle[] | null = null
+
+export type MachineTitlesMap = {
+  [key in ElementId]: MachineTitle
+}
+
+const machineTitlesMapResultMemo = memoizeOne((machineTitlesArray: MachineTitle[]) => {
+  const map = machineTitlesArray.reduce(
+    (acc, machineTitle: MachineTitle) => {
+      acc[machineTitle.machineId] = machineTitle
+      return acc
+    },
+    {} as MachineTitlesMap)
+
+  return {
+    array: machineTitlesArray,
+    map: map,
+  }
+})
+
+export type MachineTitlesMapResult = {
+  array: MachineTitle[],
+  map: MachineTitlesMap,
+}
+
+export const machineTitlesMapSelector = (state: AppState): MachineTitlesMapResult => {
+  const machineIds = machineIdsSelector(state.replicationState?.crdt.machines)
+
+  const machineTitlesArray = machineIds.map(id => {
+    const machineElement = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
+    const title = machineElement?.value.title?.value
+
+    return {
+      machineId: id,
+      title,
+    }
+  })
+
+  if (previousMachineTitlesArray !== null
+    && machineTitlesArrayComparer(machineTitlesArray, previousMachineTitlesArray)
+  ) {
+    return machineTitlesMapResultMemo(previousMachineTitlesArray)
+  }
+
+  previousMachineTitlesArray = machineTitlesArray
+  return machineTitlesMapResultMemo(machineTitlesArray)
 }

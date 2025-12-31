@@ -655,3 +655,35 @@ export function deleteProcedure(jobId: ElementId, procedureId: ElementId) {
     }
   )
 }
+
+export function setProcedureMachineId(jobId: ElementId, procedureId: ElementId, machineId: ElementId | undefined) {
+  handleSingleOperation(
+    {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation:
+      {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'procedures',
+          childOperation:
+          {
+            type: operationType.updateElement,
+            id: procedureId,
+            elementOperation: {
+              type: operationType.update,
+              key: 'machineId',
+              childOperation: {
+                type: operationType.assign,
+                timestamp: new Date().getTime(),
+                value: machineId,
+              }
+            }
+          }
+        }
+      }
+    }
+  )
+}

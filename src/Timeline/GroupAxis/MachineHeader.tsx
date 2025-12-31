@@ -34,6 +34,7 @@ const MachineHeader = memo(({ id, className, inline, canEdit = false }: MachineH
     if (isTitleAnEmptyString) {
       formattedTitle = '\u200b' // zero width space
     }
+    
     const finalDescription = isDeleted ? `Deleted (${title} — ${description})` : description
 
     const isExpandMode = state.isExpandMode

@@ -6,10 +6,10 @@ import { msToFormattedHourMinute } from '../../utils/time'
 import { deleteProcedure, prodcedureIdsSelector, useAppStore } from '../../store'
 import { DeleteIcon } from '../../components/DeleteIcon'
 import { MachineHeader } from '../../Timeline'
+import { ProcedureMachineSelect } from './ProcedureMachineSelect'
 import { JobHeader } from './JobHeader'
 import fieldClasses from '../../components/Field.module.css'
 import baseClasses from '../../components/base.module.css'
-import { ProcedureMachineOption } from './ProcedureMachineOption'
 
 export type ProcedureDetailProps = {
   jobId: ElementId
@@ -86,7 +86,7 @@ function popoverDescriptionExapndMode(
 ) {
   return (
     <Popover.Description className={baseClasses.popupDescription + ' ' + baseClasses.popupDescriptionExpandMode} render={<div />}>
-      <ProcedureMachineOption />
+      <ProcedureMachineSelect jobId={jobId} procedureId={procedureId} machineId={machineId} />
       <div className={fieldClasses.field + ' ' + fieldClasses.fieldInput + ' ' + fieldClasses.fieldInputControl + ' ' + fieldClasses.disabled}>
         <JobHeader id={jobId} inline={true} className={fieldClasses.control} />
         <div className={fieldClasses.label}>Job</div>
