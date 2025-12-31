@@ -65,12 +65,17 @@ const TaskDetail = memo(({ jobId, procedureId }: TaskDetailProps) => {
             )}
             <table className='table--unstyled'>
               <tbody>
-                {machineId && (<tr>
+                <tr>
                   <th>Machine:</th>
                   <td>
-                    <MachineHeader id={machineId} inline={true} />
+                    {machineId
+                      ? (
+                        <MachineHeader id={machineId} inline={true} />
+                      )
+                      : 'Not assigned'
+                    }
                   </td>
-                </tr>)}
+                </tr>
                 <tr>
                   <th>Job:</th>
                   <td>

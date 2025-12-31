@@ -29,12 +29,12 @@ const MachineHeader = memo(({ id, className, inline, canEdit = false }: MachineH
 
     let formattedTitle = title
     if (isDeleted) {
-      formattedTitle = emptyMachineTitle
+      formattedTitle = emptyMachineTitle + ' (Deleted)'
     }
     if (isTitleAnEmptyString) {
       formattedTitle = '\u200b' // zero width space
     }
-    
+
     const finalDescription = isDeleted ? `Deleted (${title} — ${description})` : description
 
     const isExpandMode = state.isExpandMode
