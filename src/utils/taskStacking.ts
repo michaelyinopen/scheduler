@@ -322,6 +322,29 @@ const updateTaskPositionsOperationMatchers: OperationMatcher[] = [
       }
     }
   },
+  { // update procedure's machineId
+    type: operationType.update,
+    key: 'jobs',
+    childOperation: {
+      type: operationType.updateElement,
+      id: null,
+      elementOperation: {
+        type: operationType.update,
+        key: 'procedures',
+        childOperation: {
+          type: operationType.updateElement,
+          id: null,
+          elementOperation: {
+            type: operationType.update,
+            key: 'machineId',
+            childOperation: {
+              type: operationType.assign,
+            }
+          }
+        }
+      }
+    }
+  },
   { // update procedure's processing time
     type: operationType.update,
     key: 'jobs',
@@ -377,6 +400,8 @@ export function eventsMightTaskPositions(
   if (previousCrdt === newCrdt || events.length === 0) {
     return false
   }
+
+  console.log({ events })
 
   return events.some(e => matchesOperation(
     e.operation,
