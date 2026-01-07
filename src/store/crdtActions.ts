@@ -71,8 +71,6 @@ function getCalculatedChanges(previousCrdt: FormData, newCrdt: FormData, events:
     ? { taskPositions: calculateTaskPositions(newCrdt) }
     : undefined
 
-  console.log({ taskPositionsChange })
-
   return taskPositionsChange
 }
 

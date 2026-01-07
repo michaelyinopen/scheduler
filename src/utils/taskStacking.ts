@@ -401,8 +401,6 @@ export function eventsMightTaskPositions(
     return false
   }
 
-  console.log({ events })
-
   return events.some(e => matchesOperation(
     e.operation,
     {
