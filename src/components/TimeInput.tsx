@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, type KeyboardEvent } from 'react'
 import { msToFormattedHourMinute } from '../utils/time'
+import classes from './TimeInput.module.css'
 
 const DEFAULT_VALUE = '00:00'
 const MAX_LENGTH = 5
@@ -7,37 +8,55 @@ const colon = ':'
 
 type OmittedInputPropKeys = 'onBlur' | 'onChange' | 'onKeyDown' | 'ref' | 'type' | 'value'
 export type TimeInputProps = Omit<React.ComponentProps<'input'>, OmittedInputPropKeys> & {
-  valueMs: number
+  valueMs: number | undefined
   setValueMs: (valueMs: number) => void
 }
 
 export const TimeInput = ({ valueMs, setValueMs, ...inputProps }: TimeInputProps) => {
+  const {
+    className,
+    onBlur: _onBlur,
+    onChange: _onChange,
+    onKeyDown: _onKeyDown,
+    ref: _ref,
+    type: _type,
+    value: _value,
+    ...restInputProps
+  } = inputProps as React.ComponentProps<'input'>
+  const timeInputClassName = classes.timeInput + (className ? ' ' + className : '')
+
   const inputRef = useRef<HTMLInputElement>(null)
   const previousValueRef = useRef<string>(null)
+  const hasPendingChangesRef = useRef(false)
 
   useEffect(() => {
     if (!inputRef.current) {
       return
     }
     const previousValue = previousValueRef.current === null
-      ? validateTimeAndCursor(msToFormattedHourMinute(valueMs), DEFAULT_VALUE).validatedValue
+      ? validateTimeAndCursor(msToFormattedHourMinute(valueMs ?? 0), DEFAULT_VALUE).validatedValue
       : inputRef.current.value
 
-    const { validatedValue: validatedTime } = validateTimeAndCursor(
-      msToFormattedHourMinute(valueMs),
+    const { validatedValue } = validateTimeAndCursor(
+      msToFormattedHourMinute(valueMs ?? 0),
       previousValue
     )
-    previousValueRef.current = validatedTime
-    inputRef.current.value = validatedTime
+    inputRef.current.value = validatedValue
+
+    if (previousValueRef.current !== validatedValue) {
+      hasPendingChangesRef.current = false
+      previousValueRef.current = validatedValue
+    }
   }, [valueMs])
 
   useEffect(() => {
-    if (!inputRef.current) {
+    const currentInput = inputRef.current
+    if (!currentInput) {
       return
     }
 
     const abortController = new AbortController()
-    inputRef.current.addEventListener('input', (event) => {
+    currentInput.addEventListener('input', (event) => {
       if (!event.target) {
         return
       }
@@ -105,12 +124,14 @@ export const TimeInput = ({ valueMs, setValueMs, ...inputProps }: TimeInputProps
         newPosition
       )
 
-      if (inputRef.current) {
-        inputRef.current.value = validatedValue
-        inputRef.current.selectionStart = validatedCursorPosition
-        inputRef.current.selectionEnd = validatedCursorPosition
+      currentInput.value = validatedValue
+      currentInput.selectionStart = validatedCursorPosition
+      currentInput.selectionEnd = validatedCursorPosition
+
+      if (previousValueRef.current !== validatedValue) {
+        hasPendingChangesRef.current = true
+        previousValueRef.current = validatedValue
       }
-      previousValueRef.current = validatedValue
     }, { signal: abortController.signal })
 
     return () => {
@@ -119,21 +140,23 @@ export const TimeInput = ({ valueMs, setValueMs, ...inputProps }: TimeInputProps
   }, [])
 
   const onBlur = useCallback(() => {
-    if (!inputRef.current) {
+    if (!inputRef.current || hasPendingChangesRef.current === false) {
       return
     }
 
     const inputValue = inputRef.current.value
     setValueMs(formattedTimeToMs(inputValue))
+    hasPendingChangesRef.current = false
   }, [setValueMs])
 
   const onKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
-    if (!inputRef.current) {
+    if (!inputRef.current || hasPendingChangesRef.current === false) {
       return
     }
     if (e.key === 'Enter') {
       const inputValue = inputRef.current.value
       setValueMs(formattedTimeToMs(inputValue))
+      hasPendingChangesRef.current = false
     }
   }, [setValueMs])
 
@@ -143,7 +166,8 @@ export const TimeInput = ({ valueMs, setValueMs, ...inputProps }: TimeInputProps
       ref={inputRef}
       onBlur={onBlur}
       onKeyDown={onKeyDown}
-      {...inputProps}
+      className={timeInputClassName}
+      {...restInputProps}
     />
   )
 }

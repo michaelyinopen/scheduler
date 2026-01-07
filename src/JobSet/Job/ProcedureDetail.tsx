@@ -3,8 +3,9 @@ import { useShallow } from 'zustand/shallow'
 import { Button, Field, Input, Popover } from '@base-ui/react'
 import { type ElementId, type JobValue, type ProcedureValue, type ValueElement } from '@michaelyinopen/scheduler-common'
 import { msToFormattedHourMinute } from '../../utils/time'
-import { deleteProcedure, prodcedureIdsSelector, useAppStore } from '../../store'
+import { deleteProcedure, prodcedureIdsSelector, setProcedureProcessignTimsMs, useAppStore } from '../../store'
 import { DeleteIcon } from '../../components/DeleteIcon'
+import { TimeInput } from '../../components/TimeInput'
 import { MachineHeader } from '../../Timeline'
 import { ProcedureMachineSelect } from './ProcedureMachineSelect'
 import { JobHeader } from './JobHeader'
@@ -110,7 +111,14 @@ function popoverDescriptionExapndMode(
           Drag to reorder
         </Field.Description>
       </Field.Root>
-      {/* processing time */}
+      <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
+        <TimeInput
+          className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
+          valueMs={processignTimsMs}
+          setValueMs={valueMs => setProcedureProcessignTimsMs(jobId, procedureId, valueMs)}
+        />
+        <Field.Label className={fieldClasses.label}>Time</Field.Label>
+      </Field.Root>
       <Button
         className={baseClasses.iconButton + ' ' + 'pointer'}
         aria-label='Delete procedure'

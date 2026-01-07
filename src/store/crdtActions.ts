@@ -687,3 +687,35 @@ export function setProcedureMachineId(jobId: ElementId, procedureId: ElementId, 
     }
   )
 }
+
+export function setProcedureProcessignTimsMs(jobId: ElementId, procedureId: ElementId, timeMs: number) {
+  handleSingleOperation(
+    {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation:
+      {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'procedures',
+          childOperation:
+          {
+            type: operationType.updateElement,
+            id: procedureId,
+            elementOperation: {
+              type: operationType.update,
+              key: 'processingTimeMs',
+              childOperation: {
+                type: operationType.assign,
+                timestamp: new Date().getTime(),
+                value: timeMs,
+              }
+            }
+          }
+        }
+      }
+    }
+  )
+}
