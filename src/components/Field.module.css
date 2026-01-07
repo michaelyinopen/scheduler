@@ -76,6 +76,7 @@
   font-size: 0.75rem;
   color: var(--color-gray-700);
   transition: all 200ms ease;
+  cursor: default;
 }
 
 .field.disabled .label {
@@ -112,6 +113,10 @@
   border: 0;
   outline: 0;
   margin: 0.4375rem 0;
+}
+
+.field.disabled .control {
+  cursor: default;
 }
 
 .control:focus-within ~ .label {
