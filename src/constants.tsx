@@ -44,4 +44,6 @@ export const colorPickerDebounceDelayMs = 200
 
 export const emptyMachineTitle = 'M‒' // figure dash, also used for deleted machine
 
-export const minumumProcedureProcessignTimsMs = 60000
+export const minumumProcedureProcessignTimsMs = 60000 // 1 minute
+
+export const defaultProcedureProcessignTimsMs = 300000 // 5 minutes

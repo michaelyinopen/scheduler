@@ -22,6 +22,7 @@ import { getNewJobColor } from '../utils/jobColors'
 import { calculateTaskPositions, eventsMightTaskPositions } from '../utils/taskStacking'
 import { onlineStatus } from '../useConnection'
 import { useAppStore } from './useAppStore'
+import { defaultProcedureProcessignTimsMs } from '../constants'
 
 function handleSingleOperation(operation: Operation) {
   const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
@@ -718,4 +719,117 @@ export function setProcedureProcessignTimsMs(jobId: ElementId, procedureId: Elem
       }
     }
   )
+}
+
+export function insertProcedureAtTheEnd(jobId: ElementId) {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const job = crdt.jobs?.elements[jobId] as ValueElement<JobValue> | undefined
+  const procedures = job?.value.procedures
+  const localEvents = useAppStore.getState().localEvents
+
+  // insert procedure
+  const insertVersion = nextVersion(replicaId, version)
+  const insertSequence = sequence + 1
+  const procedureId = `${replicaId}.${insertSequence}` as const
+
+  const activeValueBlocks = procedures === undefined
+    ? undefined
+    : getActiveValueBlocks(procedures)
+
+  const originLeftIndex: number | undefined = activeValueBlocks === undefined
+    ? undefined
+    : activeValueBlocks[activeValueBlocks.length - 1]?.indexInYata
+
+  const originLeft = originLeftIndex === undefined
+    ? undefined
+    : procedures!.blocks[originLeftIndex]?.id
+
+  const originRight = originLeftIndex === undefined
+    ? undefined
+    : procedures!.blocks[originLeftIndex + 1]?.id
+
+  const insertEvent = {
+    version: insertVersion,
+    origin: replicaId,
+    originSequence: insertSequence,
+    localSequence: insertSequence,
+    operation: {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation:
+      {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'procedures',
+          childOperation: {
+            type: operationType.insertElement,
+            id: procedureId,
+            originLeft,
+            originRight,
+            elementValue: {},
+          }
+        }
+      }
+    }
+  }
+
+  // processing time
+  const processingTimeMsVersion = nextVersion(replicaId, insertVersion)
+  const processingTimeMsSequence = insertSequence + 1
+
+  const processingTimeMsEvent: Event<Operation> = {
+    version: processingTimeMsVersion,
+    origin: replicaId,
+    originSequence: processingTimeMsSequence,
+    localSequence: processingTimeMsSequence,
+    operation: {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation: {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'procedures',
+          childOperation: {
+            type: operationType.updateElement,
+            id: procedureId,
+            elementOperation: {
+              type: operationType.update,
+              key: 'processingTimeMs',
+              childOperation: {
+                type: operationType.assign,
+                timestamp: new Date().getTime(),
+                value: defaultProcedureProcessignTimsMs,
+              }
+            }
+          }
+        }
+      }
+    },
+  }
+
+  let newCrdt: FormData = applyEvent(insertEvent, crdt)
+  newCrdt = applyEvent(processingTimeMsEvent, newCrdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: processingTimeMsSequence,
+    crdt: newCrdt,
+    version: processingTimeMsVersion,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, insertEvent, processingTimeMsEvent, processingTimeMsEvent]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [insertEvent, processingTimeMsEvent])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(processingTimeMsSequence, [insertEvent, processingTimeMsEvent])
 }
