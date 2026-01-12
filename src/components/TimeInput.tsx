@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, type KeyboardEvent } from 'react'
 import { msToFormattedHourMinute } from '../utils/time'
 import classes from './TimeInput.module.css'
+import { minumumProcedureProcessignTimsMs } from '../constants'
 
 const DEFAULT_VALUE = '00:00'
 const MAX_LENGTH = 5
@@ -139,26 +140,31 @@ export const TimeInput = ({ valueMs, setValueMs, ...inputProps }: TimeInputProps
     }
   }, [])
 
-  const onBlur = useCallback(() => {
-    if (!inputRef.current || hasPendingChangesRef.current === false) {
-      return
-    }
+  const commitPendingChanges = useCallback(() => {
+    if (inputRef.current && hasPendingChangesRef.current === true) {
+      const inputValue = inputRef.current.value
+      const timeMs = formattedTimeToMs(inputValue)
+      const adjustedTimeMs = Math.max(minumumProcedureProcessignTimsMs, timeMs)
+      if (adjustedTimeMs !== timeMs) {
+        const adjustedValue = msToFormattedHourMinute(adjustedTimeMs)
+        inputRef.current.value = adjustedValue
+        previousValueRef.current = adjustedValue
+      }
+      setValueMs(adjustedTimeMs)
+      hasPendingChangesRef.current = false
 
-    const inputValue = inputRef.current.value
-    setValueMs(formattedTimeToMs(inputValue))
-    hasPendingChangesRef.current = false
+    }
   }, [setValueMs])
+
+  const onBlur = useCallback(() => {
+    commitPendingChanges()
+  }, [commitPendingChanges])
 
   const onKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
-    if (!inputRef.current || hasPendingChangesRef.current === false) {
-      return
-    }
     if (e.key === 'Enter') {
-      const inputValue = inputRef.current.value
-      setValueMs(formattedTimeToMs(inputValue))
-      hasPendingChangesRef.current = false
+      commitPendingChanges()
     }
-  }, [setValueMs])
+  }, [commitPendingChanges])
 
   return (
     <input

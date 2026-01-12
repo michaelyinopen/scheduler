@@ -102,6 +102,7 @@
   font-size: 0.75rem;
   line-height: 1.25rem;
   color: var(--color-gray-600);
+  cursor: default;
 }
 
 .field.field--input-control .control {
