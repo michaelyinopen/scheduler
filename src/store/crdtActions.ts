@@ -19,7 +19,7 @@ import {
   type JobValue,
 } from '@michaelyinopen/scheduler-common'
 import { getNewJobColor } from '../utils/jobColors'
-import { calculateTaskPositions, eventsMightTaskPositions } from '../utils/taskStacking'
+import { calculateTaskPositions, eventsMightChangeTaskPositions } from '../utils/taskStacking'
 import { onlineStatus } from '../useConnection'
 import { useAppStore } from './useAppStore'
 import { defaultProcedureProcessignTimsMs } from '../constants'
@@ -68,7 +68,7 @@ function getCalculatedChanges(previousCrdt: FormData, newCrdt: FormData, events:
     return false
   }
 
-  const taskPositionsChange = eventsMightTaskPositions(previousCrdt, newCrdt, events)
+  const taskPositionsChange = eventsMightChangeTaskPositions(previousCrdt, newCrdt, events)
     ? { taskPositions: calculateTaskPositions(newCrdt) }
     : undefined
 

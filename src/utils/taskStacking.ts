@@ -368,13 +368,6 @@ const updateTaskPositionsOperationMatchers: OperationMatcher[] = [
       }
     }
   },
-  { // assign all procedure's schedule start time
-    type: operationType.update,
-    key: 'scheduledProcedureStartTimes',
-    childOperation: {
-      type: operationType.assign,
-    }
-  },
   { // assign procedure's schedule start time
     type: operationType.update,
     key: 'scheduledProcedureStartTimes',
@@ -392,7 +385,7 @@ const updateTaskPositionsOperationMatchers: OperationMatcher[] = [
   },
 ]
 
-export function eventsMightTaskPositions(
+export function eventsMightChangeTaskPositions(
   previousCrdt: FormData,
   newCrdt: FormData,
   events: Event<Operation>[]
