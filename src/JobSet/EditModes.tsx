@@ -3,12 +3,18 @@ import { Toggle } from '@base-ui/react/toggle'
 import { ToggleGroup } from '@base-ui/react/toggle-group'
 import { setIsExpandMode, useAppStore, } from '../store'
 import classes from './EditModes.module.css'
+import { useShallow } from 'zustand/shallow'
 
 const expandModeValue = 'Expand mode'
 const scheduleModeValue = 'Schedule Mode'
 
 const EditModes = memo(() => {
-  const isExpandMode = useAppStore(state => state.isExpandMode)
+  const [allowExpand, isExpandMode] = useAppStore(useShallow(state => {
+    const allowExpand = state.replicationState?.crdt.allowExpand ?? false
+    const isExpandMode = state.isExpandMode
+
+    return [allowExpand, isExpandMode]
+  }))
   const value = useMemo(() => {
     return [isExpandMode ? expandModeValue : scheduleModeValue]
   }, [isExpandMode])
@@ -21,6 +27,10 @@ const EditModes = memo(() => {
     const newValue = groupValue[0]
     setIsExpandMode(newValue === expandModeValue)
   }, [])
+
+  if (!allowExpand) {
+    return null
+  }
 
   return (
     <ToggleGroup

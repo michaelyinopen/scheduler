@@ -58,6 +58,7 @@ export function updateReplicationStateId(value: number | undefined) {
   if (value !== storeReplicationStateId) {
     useAppStore.setState({
       replicationStateId: value,
+      isExpandMode: false,
       hasLoadedReplicationState: false,
       replicationState: undefined,
       localEvents: useAppStore.getInitialState().localEvents

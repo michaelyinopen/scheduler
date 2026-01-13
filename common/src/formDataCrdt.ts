@@ -42,11 +42,13 @@ export type FormData = Partial<{
   // nexted object with key of jobId, procedureId, and value of the last-write-win register of the scheduled start time
   scheduledProcedureStartTimes: Record<ElementId, Record<ElementId, LwwRegister<number>>>
   bestTotalTimeMs: number | undefined
+  allowExpand: boolean
 }>
 
 const defaultFormData: FormData = {
   isAutoTimeOptions: true,
-  scheduledProcedureStartTimes: {}
+  scheduledProcedureStartTimes: {},
+  allowExpand: false,
 }
 
 export const formDataCrdtApi = {

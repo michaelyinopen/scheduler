@@ -538,6 +538,7 @@ const example2: FormData = {
   },
   scheduledProcedureStartTimes: {},
   bestTotalTimeMs: 660000,
+  allowExpand: true,
 }
 
 export const exampleFormDatas = new Map<number, FormData>([
