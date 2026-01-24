@@ -540,12 +540,28 @@ const example2: FormData = {
   bestTotalTimeMs: 660000,
 }
 
-// make example 3 empty
-// example 4: collaborate use this example, and allow expand
 const example3: FormData = {
   title: wrapLwwRegisterValue('Example 3: Expand'),
   description: wrapLwwRegisterValue(
     'Expand by creating your own schedule!'
+  ),
+  isAutoTimeOptions: false,
+  manualTimeOptions: {
+    maxTimeMs: 3600000,
+    viewStartTimeMs: 0,
+    viewEndTimeMs: 1500000,
+    minViewDurationMs: 600000,
+    maxViewDurationMs: 3600000
+  },
+  scheduledProcedureStartTimes: {},
+  allowExpand: true
+}
+
+// optimal solution 24 minutes
+const example4: FormData = {
+  title: wrapLwwRegisterValue('Example 4: Collaborate'),
+  description: wrapLwwRegisterValue(
+    'All examples allow collaborative editing with a friend (or two browsers tabs).'
   ),
   machines: {
     blocks: [
@@ -941,7 +957,7 @@ const example3: FormData = {
   manualTimeOptions: {
     maxTimeMs: 3600000,
     viewStartTimeMs: 0,
-    viewEndTimeMs: 1500000,
+    viewEndTimeMs: 1800000,
     minViewDurationMs: 600000,
     maxViewDurationMs: 3600000
   },
@@ -953,10 +969,12 @@ export const exampleFormDatas = new Map<number, FormData>([
   [1, example1],
   [2, example2],
   [3, example3],
+  [4, example4],
 ])
 
 export const exampleOriginalVersions = new Map<number, VectorClock>([
   [1, { 1: 17 }],
   [2, { 1: 14 }],
-  [3, { 1: 24 }],
+  [3, { 1: 1 }],
+  [4, { 1: 24 }],
 ])

@@ -1,6 +1,5 @@
 import {
-  type ElementId,
-  type LwwRegister
+  type ElementId
 } from '@michaelyinopen/scheduler-common';
 
 

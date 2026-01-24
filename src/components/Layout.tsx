@@ -62,6 +62,11 @@ export const Layout = ({ children }: LayoutProps) => {
                     <h3 className={styles.LinkTitle}>Example 3: Expand</h3>
                   </Link>
                 </li>
+                <li>
+                  <Link className={styles.LinkCard} href="/4">
+                    <h3 className={styles.LinkTitle}>Example 4: Collaborate</h3>
+                  </Link>
+                </li>
               </ul>
             </NavigationMenu.Content>
           </NavigationMenu.Item>
