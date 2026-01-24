@@ -44,6 +44,11 @@ const JobSet = memo(() => {
 
   return (
     <ol ref={setNodeRef} className={'list--unstyled' + ' ' + classes.jobSet + jobSetCanDropClassName}>
+      {jobIds === undefined || jobIds.length === 0 && (
+        <li key='empty-job' className={classes.emptyJobItem}>
+          No jobs
+        </li>
+      )}
       {jobIds?.map(id => {
         return (
           <li key={id} className={classes.jobSetItem}>

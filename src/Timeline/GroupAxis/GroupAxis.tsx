@@ -21,6 +21,11 @@ const GroupAxis = memo(() => {
   return (
     <>
       <ol className={'list--unstyled' + ' ' + classes.groupAxis}>
+        {machineIds === undefined || machineIds.length === 0 && (
+          <li key='empty-machine' className={classes.emptyMachineHeader}>
+            No machines
+          </li>
+        )}
         {machineIds?.map(id => {
           return (<li className={classes.groupHeader} key={id}><MachineHeader id={id} canEdit={true} /></li>)
         })}

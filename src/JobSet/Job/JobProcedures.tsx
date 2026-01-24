@@ -28,6 +28,11 @@ export const JobProcedures = ({ jobId }: JobProceduresProps) => {
 
   return (
     <ol className={'list--unstyled' + ' ' + classes.procedures}>
+      {procedureIds === undefined || procedureIds.length === 0 && (
+        <li key='empty-procedure' className={classes.emptyProcedureItem}>
+          No procedures
+        </li>
+      )}
       {procedureIds?.map((id) => {
         return (
           <li key={id}>

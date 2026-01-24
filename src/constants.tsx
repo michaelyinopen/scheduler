@@ -29,6 +29,7 @@ export const touchDragActivationTolerancePx = 5
 export const exampleTitles = {
   1: 'Example 1: Schedule',
   2: 'Example 2: Optimise',
+  3: 'Example 3: Expand',
 }
 
 // prioritise this description over the description in crdt
@@ -39,6 +40,8 @@ export const exampleDescriptions = {
     Drag the procedures to the timeline, until all procedures are scheduled and there are no conflicts.
   </>)
 }
+
+// default example 3 to expand mode
 
 export const colorPickerDebounceDelayMs = 200
 

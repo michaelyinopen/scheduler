@@ -26,6 +26,12 @@
   grid-template-columns: subgrid;
 }
 
+.empty-job-item {
+  grid-column: job-header-start / job-header-end;
+  color: var(--color-gray-700);
+  font-style: italic;
+}
+
 .insert-job-item {
   grid-column: job-header-start / job-header-end;
   display: flex;
@@ -62,6 +68,13 @@
   flex-direction: row;
   flex-wrap: wrap;
   overflow: hidden;
+}
+
+.empty-procedure-item {
+  align-self: center;
+  color: var(--color-gray-700);
+  font-style: italic;
+  padding-right: 0.5rem;
 }
 
 .insert-procedure-item {
