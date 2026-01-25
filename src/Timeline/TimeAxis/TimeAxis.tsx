@@ -20,7 +20,8 @@ export const TimeAxis = () => {
     refreshRate: throttleDelayMs,
     disableRerender: true,
     onResize: onResizeCallback,
-  });
+  })
+  
   return (
     <div ref={ref} className={classes.timeAxis}>
       <Scale />

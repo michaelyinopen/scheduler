@@ -6,6 +6,7 @@
   background-clip: padding-box;
   touch-action: none;
   user-select: none;
+  transform-origin: left;
 }
 
 .procedure.procedure--is-scheduled {
