@@ -1,4 +1,4 @@
-import { Popover } from '@base-ui-components/react/popover'
+import { Popover } from '@base-ui/react'
 import { useShallow } from 'zustand/shallow'
 import { debounce } from 'lodash-es'
 import { Button, Field, Input } from '@base-ui/react'
@@ -37,8 +37,8 @@ export const JobOption = ({ id }: JobOptionProps) => {
   return (
     <div className={jobSetClasses.jobOption}>
       <div className={jobClasses.lineHeightBox}>
-        <Popover.Root openOnHover={!isExpandMode}>
-          <Popover.Trigger className={baseClasses.iconButton}>
+        <Popover.Root>
+          <Popover.Trigger openOnHover={!isExpandMode} className={baseClasses.iconButton}>
             <OptionIcon />
           </Popover.Trigger>
           <Popover.Portal>

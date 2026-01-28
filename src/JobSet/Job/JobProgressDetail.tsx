@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Popover } from '@base-ui-components/react'
+import { Popover } from '@base-ui/react'
 import type { ElementId } from '@michaelyinopen/scheduler-common'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import baseClasses from '../../components/base.module.css'

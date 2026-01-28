@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Popover } from '@base-ui-components/react'
+import { Popover } from '@base-ui/react'
 import type { ElementId, JobValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { prodcedureIdsSelector, useAppStore } from '../../store'
 import { JobProgressProcedure } from './JobProgressProcedure'

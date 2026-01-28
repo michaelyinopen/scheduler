@@ -22,7 +22,6 @@ import {
   pointerWithin,
   type ClientRect,
   type DragMoveEvent,
-  MeasuringStrategy,
 } from '@dnd-kit/core'
 import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { roundToMinute } from './utils/time'

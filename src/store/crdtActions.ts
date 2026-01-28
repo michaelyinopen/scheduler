@@ -2,7 +2,6 @@ import {
   type ElementId,
   type Event,
   type Operation,
-  type ReplicaId,
   type VectorClock,
   type FormData,
   applyEvent, // should use formDataCrdtApi.apply

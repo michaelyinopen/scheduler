@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router'
-import { NavigationMenu } from '@base-ui-components/react'
+import { NavigationMenu } from '@base-ui/react'
 import schedulerLogo from '/logo.svg'
 import { ArrowSvg } from './ArrowSvg'
 import { ChevronDownIcon } from './ChevronDownIcon'

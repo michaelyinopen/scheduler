@@ -1,5 +1,5 @@
 import { useShallow } from 'zustand/shallow'
-import { Popover } from '@base-ui-components/react/popover'
+import { Popover } from '@base-ui/react'
 import type { ElementId, JobValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { jobCompletionResultSelector, prodcedureIdsSelector, useAppStore } from '../../store'
 import { closeDelayMs } from '../../constants'
@@ -36,8 +36,8 @@ export const JobProgress = ({ id }: JobProgressProps) => {
   return (
     <div className={jobSetClasses.jobProgress}>
       <div className={jobClasses.lineHeightBox}>
-        <Popover.Root openOnHover={true} closeDelay={closeDelayMs}>
-          <Popover.Trigger className={baseClasses.iconButton}>
+        <Popover.Root>
+          <Popover.Trigger openOnHover={true} closeDelay={closeDelayMs} className={baseClasses.iconButton}>
             {hasConflict ?
               <ConflictIcon />
               : (

@@ -1,13 +1,13 @@
-import { memo } from 'react';
-import { Popover } from '@base-ui-components/react';
-import { useShallow } from 'zustand/shallow';
-import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common';
-import { msToFormattedHourMinute } from '../../utils/time';
-import { prodcedureIdsSelector, taskValidationResultSelector, useAppStore } from '../../store';
-import { ArrowSvg } from '../../components/ArrowSvg';
-import { ConflictIcon } from '../../components/ConflictIcon';
-import { JobHeader, TaskConflicts } from '../../JobSet';
-import { MachineHeader } from '../GroupAxis';
+import { memo } from 'react'
+import { Popover } from '@base-ui/react'
+import { useShallow } from 'zustand/shallow'
+import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common'
+import { msToFormattedHourMinute } from '../../utils/time'
+import { prodcedureIdsSelector, taskValidationResultSelector, useAppStore } from '../../store'
+import { ArrowSvg } from '../../components/ArrowSvg'
+import { ConflictIcon } from '../../components/ConflictIcon'
+import { JobHeader, TaskConflicts } from '../../JobSet'
+import { MachineHeader } from '../GroupAxis'
 import baseClasses from '../../components/base.module.css'
 import classes from './ScheduleBody.module.css'
 

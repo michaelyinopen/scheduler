@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { useShallow } from 'zustand/shallow'
-import { Popover } from '@base-ui-components/react'
-import { Button, Field, Input } from '@base-ui/react'
+import { Popover, Button, Field, Input } from '@base-ui/react'
 import type { ElementId, MachineValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { emptyMachineTitle } from '../../constants'
 import { deleteMachine, setMachineDescription, setMachineTitle, useAppStore } from '../../store'
@@ -47,8 +46,9 @@ const MachineHeader = memo(({ id, className, inline, canEdit = false }: MachineH
   const expandModeClassName = isExpandMode && canEdit ? ` ${classes.machineHeaderExpandMode}` : ''
 
   return (
-    <Popover.Root openOnHover={!isExpandMode || !canEdit}>
+    <Popover.Root>
       <Popover.Trigger
+        openOnHover={!isExpandMode || !canEdit}
         nativeButton={isExpandMode && canEdit}
         className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName + expandModeClassName}
         render={isExpandMode && canEdit ? <button /> : <div />}
