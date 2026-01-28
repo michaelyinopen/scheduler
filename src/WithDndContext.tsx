@@ -215,7 +215,6 @@ export const WithDndContext = ({ children }: WithDndContextProps) => {
       onDragMove={onDragMove}
       onDragEnd={onDragEnd}
       onDragCancel={onDragCancel}
-      measuring={{ droppable: { strategy: MeasuringStrategy.WhileDragging } }}
     >
       {children}
       <CustomDragOverlay />
