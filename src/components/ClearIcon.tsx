@@ -1,4 +1,4 @@
-export function ChevronDownIcon(props: React.ComponentProps<'svg'>) {
+export function ClearIcon(props: React.ComponentProps<'svg'>) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -9,7 +9,8 @@ export function ChevronDownIcon(props: React.ComponentProps<'svg'>) {
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M6 9l6 6 6-6" />
+      <path d="M18 6L6 18" />
+      <path d="M6 6l12 12" />
     </svg>
   );
 }

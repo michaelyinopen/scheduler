@@ -22,7 +22,6 @@ import {
   pointerWithin,
   type ClientRect,
   type DragMoveEvent,
-  MeasuringStrategy,
 } from '@dnd-kit/core'
 import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { roundToMinute } from './utils/time'
@@ -215,7 +214,6 @@ export const WithDndContext = ({ children }: WithDndContextProps) => {
       onDragMove={onDragMove}
       onDragEnd={onDragEnd}
       onDragCancel={onDragCancel}
-      measuring={{ droppable: { strategy: MeasuringStrategy.WhileDragging } }}
     >
       {children}
       <CustomDragOverlay />

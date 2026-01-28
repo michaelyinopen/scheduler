@@ -26,6 +26,19 @@
   grid-template-columns: subgrid;
 }
 
+.empty-job-item {
+  grid-column: job-header-start / job-header-end;
+  color: var(--color-gray-700);
+  font-style: italic;
+}
+
+.insert-job-item {
+  grid-column: job-header-start / job-header-end;
+  display: flex;
+  height: 1.15rem;
+  align-items: center;
+}
+
 .job {
   grid-column: option-start / procedures-end;
   display: grid;
@@ -45,7 +58,7 @@
 
 .job-set__job-header {
   grid-column: job-header-start / job-header-end;
-  margin-left: 0.5rem;
+  margin: 0.25rem 0 0.25rem 0.5rem;
   font-size: 1.17rem;
 }
 
@@ -55,6 +68,17 @@
   flex-direction: row;
   flex-wrap: wrap;
   overflow: hidden;
+}
+
+.empty-procedure-item {
+  align-self: center;
+  color: var(--color-gray-700);
+  font-style: italic;
+  padding-right: 0.5rem;
+}
+
+.insert-procedure-item {
+  align-self: center;
 }
 
 .title {

@@ -45,14 +45,22 @@ export const TimeLabels = () => {
   const yourTimeMs: number | undefined = useAppStore(state => {
     const jobIds = jobIdsSelector(state.replicationState?.crdt.jobs)
 
-    const jobSetCompleted = jobIds.every(jId => {
-      const job = state.replicationState?.crdt.jobs?.elements[jId] as ValueElement<JobValue> | undefined
-      const procedureIds = prodcedureIdsSelector(jId, job?.value.procedures)
+    const { jobsCompleted, hasProcedures } = jobIds.reduce(
+      (acc, jId) => {
+        const job = state.replicationState?.crdt.jobs?.elements[jId] as ValueElement<JobValue> | undefined
+        const procedureIds = prodcedureIdsSelector(jId, job?.value.procedures)
 
-      const jobCompletionResult = jobCompletionResultSelector(jId, procedureIds, state.taskPositions)
+        const jobCompletionResult = jobCompletionResultSelector(jId, procedureIds, state.taskPositions)
 
-      return jobCompletionResult.completedCount === procedureIds.length
-    })
+        const jobsCompleted = acc.jobsCompleted && jobCompletionResult.completedCount === procedureIds.length
+        const hasProcedures = acc.hasProcedures || procedureIds.length > 0
+
+        return { jobsCompleted, hasProcedures }
+      },
+      { jobsCompleted: true, hasProcedures: false }
+    )
+
+    const jobSetCompleted = jobsCompleted && hasProcedures
 
     if (jobIds.length === 0 || !jobSetCompleted) {
       return undefined

@@ -322,6 +322,29 @@ const updateTaskPositionsOperationMatchers: OperationMatcher[] = [
       }
     }
   },
+  { // update procedure's machineId
+    type: operationType.update,
+    key: 'jobs',
+    childOperation: {
+      type: operationType.updateElement,
+      id: null,
+      elementOperation: {
+        type: operationType.update,
+        key: 'procedures',
+        childOperation: {
+          type: operationType.updateElement,
+          id: null,
+          elementOperation: {
+            type: operationType.update,
+            key: 'machineId',
+            childOperation: {
+              type: operationType.assign,
+            }
+          }
+        }
+      }
+    }
+  },
   { // update procedure's processing time
     type: operationType.update,
     key: 'jobs',
@@ -345,13 +368,6 @@ const updateTaskPositionsOperationMatchers: OperationMatcher[] = [
       }
     }
   },
-  { // assign all procedure's schedule start time
-    type: operationType.update,
-    key: 'scheduledProcedureStartTimes',
-    childOperation: {
-      type: operationType.assign,
-    }
-  },
   { // assign procedure's schedule start time
     type: operationType.update,
     key: 'scheduledProcedureStartTimes',
@@ -369,7 +385,7 @@ const updateTaskPositionsOperationMatchers: OperationMatcher[] = [
   },
 ]
 
-export function eventsMightTaskPositions(
+export function eventsMightChangeTaskPositions(
   previousCrdt: FormData,
   newCrdt: FormData,
   events: Event<Operation>[]

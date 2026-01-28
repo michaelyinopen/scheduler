@@ -19,7 +19,7 @@
   }
 
   &:active {
-    background-color: var(--color-gray-200);
+    background-color: var(--color-gray-300);
   }
 
   &[data-popup-open] {
@@ -30,6 +30,10 @@
     outline: 2px solid var(--color-blue);
     outline-offset: -1px;
   }
+}
+
+.icon-button--small {
+  padding: 0.1rem;
 }
 
 .popup {
@@ -57,8 +61,14 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    outline: 1px solid var(--color-gray-300);
+    outline: 1px solid var(--color-gray-400);
     outline-offset: -1px;
+  }
+}
+
+.popup.popup--strong {
+  @media (prefers-color-scheme: dark) {
+    outline: 1px solid var(--color-gray-600);
   }
 }
 
@@ -105,7 +115,13 @@
 
 .arrow-inner-stroke {
   @media (prefers-color-scheme: dark) {
-    fill: var(--color-gray-300);
+    fill: var(--color-gray-400);
+  }
+}
+
+.popup--strong .arrow-inner-stroke {
+  @media (prefers-color-scheme: dark) {
+    fill: var(--color-gray-600);
   }
 }
 
@@ -123,6 +139,13 @@
   color: var(--color-gray-900);
 }
 
+.popup-description--expand-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
 .completed-icon {
   fill: #22A06B;
   width: 1.5rem;
@@ -132,7 +155,7 @@
 
 .completed-icon--check-mark {
   stroke: #ecedf0;
-  stroke-width: 24px;
+  stroke-width: 24;
 }
 
 .not-completed-icon {
@@ -150,4 +173,28 @@
 
 .conflict-icon--exclamation-mark {
   fill: #ecedf0;
+}
+
+.plus-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: hsl(210, 79%, 50%);
+}
+
+.plus-icon-sign {
+  stroke: #ecedf0;
+  stroke-width: 24;
+  stroke-linecap: round;
+}
+
+.delete-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
+}
+
+.renew-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
 }

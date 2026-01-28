@@ -51,14 +51,12 @@ function getRandomColor(): string {
   return color
 }
 
-type NewJobColorResult = { color: string, textColor: string }
-
 /**
  * Returns the next pre-defiend color, or cycles to a random color if <=4 color options remaining. 
  * New job's current color can be the last job's color.
  * CurrentColor can be included or not included in excludeColors.
  * */ 
-export function getNewJobColor(excludeColors: string[] = [], currentColor?: string): NewJobColorResult {
+export function getNewJobColor(excludeColors: string[] = [], currentColor?: string) {
   const availableColors = colors.filter(c => c === currentColor || !excludeColors.includes(c))
   const currentIndex = currentColor ? availableColors.indexOf(currentColor) : -1
 
@@ -71,6 +69,5 @@ export function getNewJobColor(excludeColors: string[] = [], currentColor?: stri
   const color = noAvailableColors || onlyCurrentColorAvailable || isLastOfFourAvailableColors
     ? getRandomColor()
     : availableColors[(currentIndex + 1) % availableColors.length]
-  const textColor = pickTextColor(color)
-  return { color, textColor }
+  return color
 }

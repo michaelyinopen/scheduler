@@ -160,7 +160,7 @@ export function integrateMoved(block: Block, element: Element<unknown>, yata: Ya
   return yata
 }
 
-export function activeValueBlocks(yata: Yata<unknown>): { indexInYata: number, block: Block }[] {
+export function getActiveValueBlocks(yata: Yata<unknown>): { indexInYata: number, block: Block }[] {
   return yata.blocks.reduce((acc, block, index) => {
     const element = yata.elements[block.id]
 

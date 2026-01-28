@@ -2,8 +2,8 @@ export const throttleDelayMs = 16
 export const closeDelayMs = 200
 
 export const defaultJobSetId = 1
-export const availableJobSetIds = [1, 2, 3]
-export const availableSolutionJobSetIds = [1, 2]
+export const availableJobSetIds = [1, 2, 3, 4]
+export const availableSolutionJobSetIds: number[] = [] // out of scope
 
 export const serverReplicaId = 1
 
@@ -29,6 +29,8 @@ export const touchDragActivationTolerancePx = 5
 export const exampleTitles = {
   1: 'Example 1: Schedule',
   2: 'Example 2: Optimise',
+  3: 'Example 3: Expand',
+  4: 'Example 4: Collaborate',
 }
 
 // prioritise this description over the description in crdt
@@ -39,3 +41,11 @@ export const exampleDescriptions = {
     Drag the procedures to the timeline, until all procedures are scheduled and there are no conflicts.
   </>)
 }
+
+export const colorPickerDebounceDelayMs = 200
+
+export const emptyMachineTitle = 'M‒' // figure dash, also used for deleted machine
+
+export const minumumProcedureProcessignTimsMs = 60000 // 1 minute
+
+export const defaultProcedureProcessignTimsMs = 300000 // 5 minutes

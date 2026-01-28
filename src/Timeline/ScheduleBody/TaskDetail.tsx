@@ -1,13 +1,13 @@
-import { memo } from 'react';
-import { Popover } from '@base-ui-components/react';
-import { useShallow } from 'zustand/shallow';
-import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common';
-import { msToFormattedHourMinute } from '../../utils/time';
-import { prodcedureIdsSelector, taskValidationResultSelector, useAppStore } from '../../store';
-import { ArrowSvg } from '../../components/ArrowSvg';
-import { ConflictIcon } from '../../components/ConflictIcon';
-import { JobHeader, TaskConflicts } from '../../JobSet';
-import { MachineHeader } from '../GroupAxis';
+import { memo } from 'react'
+import { Popover } from '@base-ui/react'
+import { useShallow } from 'zustand/shallow'
+import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common'
+import { msToFormattedHourMinute } from '../../utils/time'
+import { prodcedureIdsSelector, taskValidationResultSelector, useAppStore } from '../../store'
+import { ArrowSvg } from '../../components/ArrowSvg'
+import { ConflictIcon } from '../../components/ConflictIcon'
+import { JobHeader, TaskConflicts } from '../../JobSet'
+import { MachineHeader } from '../GroupAxis'
 import baseClasses from '../../components/base.module.css'
 import classes from './ScheduleBody.module.css'
 
@@ -49,7 +49,7 @@ const TaskDetail = memo(({ jobId, procedureId }: TaskDetailProps) => {
   return (
     <Popover.Portal>
       <Popover.Positioner sideOffset={6} align='start'>
-        <Popover.Popup className={baseClasses.popup}>
+        <Popover.Popup className={baseClasses.popup + ' ' + baseClasses.popupStrong}>
           <Popover.Arrow className={baseClasses.arrow}>
             <ArrowSvg />
           </Popover.Arrow>
@@ -65,12 +65,17 @@ const TaskDetail = memo(({ jobId, procedureId }: TaskDetailProps) => {
             )}
             <table className='table--unstyled'>
               <tbody>
-                {machineId && (<tr>
+                <tr>
                   <th>Machine:</th>
                   <td>
-                    <MachineHeader id={machineId} inline={true} />
+                    {machineId
+                      ? (
+                        <MachineHeader id={machineId} inline={true} />
+                      )
+                      : 'Not assigned'
+                    }
                   </td>
-                </tr>)}
+                </tr>
                 <tr>
                   <th>Job:</th>
                   <td>

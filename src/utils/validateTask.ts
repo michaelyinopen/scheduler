@@ -6,7 +6,6 @@ export type ValidateTaskResult = {
 } | {
   isValid: false
   overlapsOnMachine: boolean
-  overlapsWithOtherOfSameJob: boolean
   precedingNotScheduled: boolean
   precedingNotFinished: boolean
 }
@@ -52,12 +51,6 @@ export function validateTask(
       && p.endTimeMs > currentTaskPosition.startTimeMs
   })
 
-  const overlapsWithOtherOfSameJob = otherTaskPositions.some(p => {
-    return p.jobId === currentJobId
-      && p.startTimeMs < currentTaskPosition.endTimeMs
-      && p.endTimeMs > currentTaskPosition.startTimeMs
-  })
-
   const { allPrecedingScheduled, allPrecedingFinished } = getAreAllPrecedingScheduledAndFinished(
     currentProcedureId,
     currentTaskPosition,
@@ -67,12 +60,11 @@ export function validateTask(
   const precedingNotScheduled = !allPrecedingScheduled
   const precedingNotFinished = !allPrecedingFinished
 
-  const isValid = !overlapsOnMachine && !overlapsWithOtherOfSameJob && !precedingNotScheduled && !precedingNotFinished
+  const isValid = !overlapsOnMachine && !precedingNotScheduled && !precedingNotFinished
 
   return {
     isValid,
     overlapsOnMachine,
-    overlapsWithOtherOfSameJob,
     precedingNotScheduled,
     precedingNotFinished,
   }

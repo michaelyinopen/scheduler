@@ -1,46 +1,125 @@
+import { memo } from 'react'
 import { useShallow } from 'zustand/shallow'
-import { Popover } from '@base-ui-components/react'
+import { Popover, Button, Field, Input } from '@base-ui/react'
 import type { ElementId, MachineValue, ValueElement } from '@michaelyinopen/scheduler-common'
-import { useAppStore } from '../../store'
+import { emptyMachineTitle } from '../../constants'
+import { deleteMachine, setMachineDescription, setMachineTitle, useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
+import { DeleteIcon } from '../../components/DeleteIcon'
 import baseClasses from '../../components/base.module.css'
+import fieldClasses from '../../components/Field.module.css'
 import classes from '../Timeline.module.css'
 
 export type MachineHeaderProps = {
   id: ElementId
   className?: string
   inline?: boolean
+  canEdit?: boolean
 }
 
-export const MachineHeader = ({ id, className, inline }: MachineHeaderProps) => {
-  const [title, description] = useAppStore(useShallow(state => {
-    const machine = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
-    const title = machine?.value.title?.value
-    const description = machine?.value.description?.value
+const MachineHeader = memo(({ id, className, inline, canEdit = false }: MachineHeaderProps) => {
+  const [title, formattedTitle, description, isExpandMode] = useAppStore(useShallow(state => {
+    const machineElement = state.replicationState?.crdt.machines?.elements[id] as ValueElement<MachineValue> | undefined
+    const title = machineElement?.value.title?.value
+    const isTitleAnEmptyString = machineElement?.value.title?.value === ''
+    const description = machineElement?.value.description?.value
 
-    return [title, description]
+    const isDeleted = machineElement?.isDeleted
+
+    let formattedTitle = title
+    if (isDeleted) {
+      formattedTitle = emptyMachineTitle + ' (Deleted)'
+    }
+    if (isTitleAnEmptyString) {
+      formattedTitle = '\u200b' // zero width space
+    }
+
+    const finalDescription = isDeleted ? `Deleted (${title} — ${description})` : description
+
+    const isExpandMode = state.isExpandMode
+
+    return [title, formattedTitle, finalDescription, isExpandMode]
   }))
 
   const propsClassName = className ? ' ' + className : ''
   const inlineMachineHeaderClassName = inline ? ` ${classes.machineHeaderInline}` : ''
+  const expandModeClassName = isExpandMode && canEdit ? ` ${classes.machineHeaderExpandMode}` : ''
 
   return (
-    <Popover.Root openOnHover={true}>
-      <Popover.Trigger nativeButton={false} render={<div className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName} />}>
-        {title}
+    <Popover.Root>
+      <Popover.Trigger
+        openOnHover={!isExpandMode || !canEdit}
+        nativeButton={isExpandMode && canEdit}
+        className={classes.machineHeader + propsClassName + inlineMachineHeaderClassName + expandModeClassName}
+        render={isExpandMode && canEdit ? <button /> : <div />}
+      >
+        {formattedTitle}
       </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Positioner side='top' sideOffset={4}>
-          <Popover.Popup className={baseClasses.popup + ' ' + baseClasses.tooltip}>
-            <Popover.Arrow className={baseClasses.arrow}>
-              <ArrowSvg />
-            </Popover.Arrow>
-            <Popover.Description className={baseClasses.popupDescription}>
-              {description}
-            </Popover.Description>
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
+      {isExpandMode && canEdit
+        ? expandModePopup(id, title, description)
+        : tooltipPopup(description)}
     </Popover.Root>
   )
+})
+
+function tooltipPopup(description: string | undefined) {
+  return (
+    <Popover.Portal>
+      <Popover.Positioner side='top' sideOffset={4}>
+        <Popover.Popup className={baseClasses.popup + ' ' + baseClasses.tooltip}>
+          <Popover.Arrow className={baseClasses.arrow}>
+            <ArrowSvg />
+          </Popover.Arrow>
+          <Popover.Description className={baseClasses.popupDescription}>
+            {description}
+          </Popover.Description>
+        </Popover.Popup>
+      </Popover.Positioner>
+    </Popover.Portal>
+  )
 }
+
+function expandModePopup(id: ElementId, title: string | undefined, description: string | undefined) {
+  return (
+    <Popover.Portal>
+      <Popover.Positioner sideOffset={8} align='start'>
+        <Popover.Popup className={baseClasses.popup + ' ' + baseClasses.popupStrong}>
+          <Popover.Arrow className={baseClasses.arrow}>
+            <ArrowSvg />
+          </Popover.Arrow>
+          <Popover.Description className={baseClasses.popupDescription + ' ' + baseClasses.popupDescriptionExpandMode} render={<div />}>
+            <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
+              <Input
+                className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
+                placeholder='Title'
+                value={title}
+                onChange={e => setMachineTitle(id, e.target.value)}
+              />
+              <Field.Label className={fieldClasses.label}>Title</Field.Label>
+            </Field.Root>
+            <Field.Root className={fieldClasses.field + ' ' + fieldClasses.fieldInput}>
+              <Input
+                className={fieldClasses.input + ' ' + fieldClasses.inputShortWidth}
+                placeholder='Description'
+                value={description}
+                onChange={e => setMachineDescription(id, e.target.value)}
+              />
+              <Field.Label className={fieldClasses.label}>Description</Field.Label>
+            </Field.Root>
+            <Button
+              className={baseClasses.iconButton + ' ' + 'pointer'}
+              aria-label={`Delete machine ${title ?? ''}`}
+              title={`Delete machine ${title ?? ''}`}
+              onClick={() => deleteMachine(id)}
+            >
+              <DeleteIcon />
+            </Button>
+          </Popover.Description>
+        </Popover.Popup>
+      </Popover.Positioner>
+    </Popover.Portal>
+  )
+}
+
+MachineHeader.displayName = 'MachineHeader'
+export { MachineHeader }

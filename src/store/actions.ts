@@ -58,6 +58,7 @@ export function updateReplicationStateId(value: number | undefined) {
   if (value !== storeReplicationStateId) {
     useAppStore.setState({
       replicationStateId: value,
+      isExpandMode: false,
       hasLoadedReplicationState: false,
       replicationState: undefined,
       localEvents: useAppStore.getInitialState().localEvents
@@ -125,5 +126,11 @@ export function resetReplicationState(id: number, replicationState: ReplicationS
 export function setIsViewingSolution(value: boolean) {
   useAppStore.setState({
     isViewingSolution: value,
+  })
+}
+
+export function setIsExpandMode(value: boolean) {
+  useAppStore.setState({
+    isExpandMode: value,
   })
 }

@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore, type Ref, } from 'react'
 import { useDraggable } from '@dnd-kit/core'
-import { Popover } from '@base-ui-components/react'
+import { Popover } from '@base-ui/react'
 import type { ElementId, JobValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { stopPointerPropagation } from '../../utils/stopPointerPropagation'
 import { type TaskHeightLevelType, taskHeightLevelType } from '../../utils/taskStacking'
@@ -109,18 +109,20 @@ const TaskDraggable = memo(({ ref, type, jobId, procedureId, heightLevel, ...res
 
   return (
     <Popover.Root
-      delay={500}
-      openOnHover={true}
       open={open}
       onOpenChange={setOpen}
     >
-      <Popover.Trigger nativeButton={false} render={(
-        <div
-          className={classes.task}
-          style={style}
-          onPointerDown={stopPointerPropagation}
-        />
-      )}
+      <Popover.Trigger
+        openOnHover={true}
+        delay={500}
+        nativeButton={false}
+        render={(
+          <div
+            className={classes.task}
+            style={style}
+            onPointerDown={stopPointerPropagation}
+          />
+        )}
       >
         <Procedure
           ref={ref}

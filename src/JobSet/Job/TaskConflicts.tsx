@@ -29,7 +29,6 @@ const TaskConflicts = memo(({ jobId, procedureId, validateTaskResult, className 
   return (
     <ol className={'list--unstyled' + additionalClassName}>
       {validateTaskResult.overlapsOnMachine && <li>Cannot overlap with other procedures that uses <MachineHeader id={machineId} inline={true} />.</li>}
-      {validateTaskResult.overlapsWithOtherOfSameJob && <li>Cannot overlap with other procedures of the <JobHeader id={jobId} inline={true} />.</li>}
       {validateTaskResult.precedingNotScheduled && <li>Not all preceding procedures of <JobHeader id={jobId} inline={true} /> are scheduled.</li>}
       {validateTaskResult.precedingNotFinished && <li>Not all preceding procedures of <JobHeader id={jobId} inline={true} /> are finished.</li>}
     </ol>

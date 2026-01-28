@@ -123,12 +123,16 @@
   }
 }
 
-
 .Icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.2s ease;
-
+  width: 1rem;
+  height: 1rem;
+  
   &[data-popup-open] {
-    transform: rotate(180deg);
+    transform: scaleY(-1);
   }
 }
 
@@ -217,7 +221,7 @@
 
 @media (prefers-color-scheme: dark) {
   .Popup {
-    outline: 1px solid var(--color-gray-300);
+    outline: 1px solid var(--color-gray-400);
     outline-offset: -1px;
   }
 }
@@ -350,6 +354,6 @@
 
 .ArrowInnerStroke {
   @media (prefers-color-scheme: dark) {
-    fill: var(--color-gray-300);
+    fill: var(--color-gray-400);
   }
 }

@@ -1,0 +1,287 @@
+.field {
+  position: relative;
+  padding: 0.9375rem 0 0 0;
+}
+
+.field.field--input::after {
+  left: 0px;
+  bottom: 0px;
+  content: " ";
+  position: absolute;
+  right: 0px;
+  pointer-events: none;
+  border-bottom: 1px solid var(--color-gray-700);
+  transition: border-bottom-color 200ms ease;
+}
+
+.field.field--input-control {
+  display: flex;
+  width: 100%;
+  min-width: 5rem;
+}
+
+.field.disabled::after {
+  border-bottom-style: dotted;
+}
+
+.field:hover::after {
+  border-bottom: 2px solid currentColor;
+}
+
+.field.disabled:hover::after {
+  border-bottom: 1px dotted var(--color-gray-700);
+}
+
+.field:focus-within::after {
+  border-bottom: 2px solid rgb(144, 202, 449);
+}
+
+.input {
+  width: stretch;
+  border: 0;
+  outline: 0;
+  font-size: 1rem;
+  padding: 0.4375rem 0;
+  background: transparent;
+  transition: border-color 200ms ease;
+  line-height: normal;
+}
+
+.input.input--short-width {
+  field-sizing: content;
+  /* limited support but the fallback look good too */
+  min-width: 5rem;
+}
+
+.field.disabled .input {
+  color: var(--color-gray-600);
+}
+
+.input::placeholder {
+  color: transparent;
+}
+
+.input:placeholder-shown ~ .label {
+  font-size: 1rem;
+  cursor: text;
+  top: 1.25rem;
+  user-select: none;
+}
+
+.label,
+.input:focus ~ .label {
+  position: absolute;
+  top: 0;
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-gray-700);
+  transition: all 200ms ease;
+  cursor: default;
+}
+
+.field.disabled .label {
+  color: var(--color-gray-600);
+}
+
+.input:focus ~ .label {
+  color: rgb(144, 202, 449);
+}
+
+@media (prefers-color-scheme: light) {
+  .field:focus-within::after {
+    border-bottom: 2px solid #1976d2;
+  }
+
+  .input:focus ~ .label {
+    color: #1976d2;
+  }
+}
+
+.description {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--color-gray-600);
+  cursor: default;
+}
+
+.field.field--input-control .control {
+  width: auto;
+}
+
+.control {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  margin: 0.4375rem 0;
+}
+
+.field.disabled .control {
+  cursor: default;
+}
+
+.control:focus-within ~ .label {
+  color: rgb(144, 202, 449);
+}
+
+@media (prefers-color-scheme: light) {
+  .control:focus-within ~ .label {
+    color: #1976d2;
+  }
+}
+
+.field:has(.clear) .input.input--combobox {
+  padding-right: calc(0.5rem + 1.5rem * 2);
+}
+
+.input.input--combobox {
+  padding-right: calc(0.5rem + 1.5rem);
+}
+
+.action-buttons {
+  box-sizing: border-box;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  bottom: 0;
+  height: 2.5rem;
+  right: 0.5rem;
+  border: none;
+  color: var(--color-gray-600);
+  padding: 0;
+}
+
+.trigger,
+.clear {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-gray-600);
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-gray-200);
+    }
+  }
+
+  &:active {
+    background-color: var(--color-gray-300);
+  }
+}
+
+.trigger[data-popup-open] {
+  transform: scaleY(-1);
+}
+
+.clear-icon,
+.trigger-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.combo-popup {
+  box-sizing: border-box;
+  border-radius: 0.375rem;
+  background-color: canvas;
+  color: var(--color-gray-900);
+  width: var(--anchor-width);
+  max-height: 23rem;
+  max-width: var(--available-width);
+  transition:
+    opacity 0.1s,
+    transform 0.1s;
+  transform-origin: var(--transform-origin);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  @media (prefers-color-scheme: light) {
+    outline: 1px solid var(--color-gray-200);
+    box-shadow:
+      0 10px 15px -3px var(--color-gray-200),
+      0 4px 6px -4px var(--color-gray-200);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    outline: 1px solid var(--color-gray-300);
+    outline-offset: -1px;
+  }
+}
+
+.combo-list {
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 0.5rem;
+  scroll-padding-block: 0.5rem;
+  outline: 0;
+  max-height: min(23rem, var(--available-height));
+
+  &[data-empty] {
+    padding: 0;
+  }
+}
+
+.combo-item {
+  box-sizing: border-box;
+  outline: 0;
+  cursor: default;
+  user-select: none;
+  padding-block: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 2rem;
+  display: grid;
+  gap: 0.5rem;
+  align-items: center;
+  grid-template-columns: 0.75rem 1fr;
+  font-size: 1rem;
+  line-height: 1rem;
+
+  &[data-highlighted] {
+    z-index: 0;
+    position: relative;
+    color: var(--color-gray-50);
+  }
+
+  &[data-highlighted]::before {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: var(--color-gray-900);
+  }
+}
+
+.combo-item-text {
+  grid-column-start: 2;
+}
+
+.combo-item-indicator {
+  grid-column-start: 1;
+}
+
+.combo-item-indicator-icon {
+  display: block;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.combo-empty:not(:empty) {
+  font-size: 0.925rem;
+  line-height: 1rem;
+  color: var(--color-gray-600);
+  padding: 1rem;
+}

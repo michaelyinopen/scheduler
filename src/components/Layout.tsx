@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router'
-import { NavigationMenu } from '@base-ui-components/react'
+import { NavigationMenu } from '@base-ui/react'
 import schedulerLogo from '/logo.svg'
 import { ArrowSvg } from './ArrowSvg'
 import { ChevronDownIcon } from './ChevronDownIcon'
@@ -57,11 +57,16 @@ export const Layout = ({ children }: LayoutProps) => {
                     <h3 className={styles.LinkTitle}>Example 2: Optimise</h3>
                   </Link>
                 </li>
-                {/* <li>
+                <li>
                   <Link className={styles.LinkCard} href="/3">
-                    <h3 className={styles.LinkTitle}>Example 3: Collaborate</h3>
+                    <h3 className={styles.LinkTitle}>Example 3: Expand</h3>
                   </Link>
-                </li> */}
+                </li>
+                <li>
+                  <Link className={styles.LinkCard} href="/4">
+                    <h3 className={styles.LinkTitle}>Example 4: Collaborate</h3>
+                  </Link>
+                </li>
               </ul>
             </NavigationMenu.Content>
           </NavigationMenu.Item>

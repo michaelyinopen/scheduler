@@ -1,5 +1,5 @@
 import { memo, useEffect, useState, type Ref } from 'react'
-import { Popover } from '@base-ui-components/react/popover'
+import { Popover } from '@base-ui/react/popover'
 import type { ElementId } from '@michaelyinopen/scheduler-common'
 import { useDraggable } from '@dnd-kit/core'
 import { dragType, useDragAndDropStore } from '../../dragAndDrop'
@@ -46,11 +46,15 @@ const JobProcedureDraggable = memo(({ ref, jobId, procedureId, ...rest }: JobPro
 
   return (
     <Popover.Root
-      openOnHover={true}
       open={open}
       onOpenChange={setOpen}
     >
-      <Popover.Trigger nativeButton={false} render={<div className={jobClasses.jobProcedure} />}>
+      <Popover.Trigger
+        openOnHover={true}
+        nativeButton={false}
+        className={jobClasses.jobProcedure}
+        render={<div />}
+      >
         <Procedure
           ref={ref}
           jobId={jobId}
@@ -65,9 +69,7 @@ const JobProcedureDraggable = memo(({ ref, jobId, procedureId, ...rest }: JobPro
             <Popover.Arrow className={baseClasses.arrow}>
               <ArrowSvg />
             </Popover.Arrow>
-            <Popover.Description className={baseClasses.popupDescription} render={<div />}>
-              <ProcedureDetail jobId={jobId} procedureId={procedureId} />
-            </Popover.Description>
+            <ProcedureDetail jobId={jobId} procedureId={procedureId} />
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>
