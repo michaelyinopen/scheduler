@@ -177,7 +177,7 @@ export function getActiveValueBlocks(yata: Yata<unknown>): { indexInYata: number
         && fromElement.isDeleted !== true
         && fromElement.movedTo === block.id // the moved block matches the 'from' block's movedTo value
       ) {
-        const fromBlock = yata.blocks.find(b => b.id === element.from)
+        const fromBlock = yata.blocks.find(b => b.id === element.from)!
         acc.push({ indexInYata: index, block: fromBlock })
       }
     }
