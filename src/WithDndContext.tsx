@@ -4,6 +4,7 @@ import {
   isJobSetDropData,
   isMachineLaneDropData,
   isProcedureDragItem,
+  isProcedureDropData,
   isTaskDragItem,
   setProcedureDragItem,
   setTaskDragItem,
@@ -25,7 +26,7 @@ import {
 } from '@dnd-kit/core'
 import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { roundToMinute } from './utils/time'
-import { scheduledProcedure, useAppStore } from './store'
+import { moveProcedure, scheduledProcedure, useAppStore } from './store'
 
 type CalculateScheduledTimeResult = {
   shouldUpdate: false
@@ -185,6 +186,14 @@ function handleDrop(
 
   if (isTaskDragItem(dragItem) && isJobSetDropData(dropData)) {
     scheduledProcedure(dragItem.jobId, dragItem.procedureId, undefined)
+    return
+  }
+
+  if (isProcedureDragItem(dragItem) && isProcedureDropData(dropData)
+    && dragItem.jobId === dropData.jobId
+    && dragItem.procedureId !== dropData.procedureId
+  ) {
+    moveProcedure(dragItem.jobId, dragItem.procedureId, dropData.procedureId)
     return
   }
 }

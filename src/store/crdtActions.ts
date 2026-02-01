@@ -16,6 +16,7 @@ import {
   isValueElement,
   type ValueElement,
   type JobValue,
+  elementType,
 } from '@michaelyinopen/scheduler-common'
 import { getNewJobColor } from '../utils/jobColors'
 import { calculateTaskPositions, eventsMightChangeTaskPositions } from '../utils/taskStacking'
@@ -831,4 +832,106 @@ export function insertProcedureAtTheEnd(jobId: ElementId) {
   })
 
   submitEvents(processingTimeMsSequence, [insertEvent, processingTimeMsEvent])
+}
+
+export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, targetProcedureId: ElementId) {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const localEvents = useAppStore.getState().localEvents
+  const job = crdt.jobs?.elements[jobId] as ValueElement<JobValue> | undefined
+  const procedures = job?.value.procedures
+
+  if (procedures === undefined) {
+    return
+  }
+
+  const activeValueBlocks = getActiveValueBlocks(procedures)
+
+  const sourceIndexInActive = activeValueBlocks.findIndex(activeValueBlock => activeValueBlock.block.id === sourceProcedureId)
+  const targetIndexInActive = activeValueBlocks.findIndex(activeValueBlock => activeValueBlock.block.id === targetProcedureId)
+  if (sourceIndexInActive === -1 || targetIndexInActive === -1 || sourceIndexInActive === targetIndexInActive) {
+    return
+  }
+
+  const targetElement = procedures.elements[targetProcedureId]
+
+  if (targetElement.type !== elementType.value) {
+    return
+  }
+
+  const targetIndexInYata = activeValueBlocks[targetIndexInActive].indexInYata
+
+  const { movedBlockOriginLeft, movedBlockOriginRight } = sourceIndexInActive > targetIndexInActive
+    ? { // Originally, source is on the right side of target. After moving, target on the immediate right of source
+      movedBlockOriginLeft: procedures.blocks[targetIndexInYata - 1]?.id,
+      movedBlockOriginRight: procedures.blocks[targetIndexInYata]?.id
+    }
+    : { // Originally, source is on the left side of target. After moving, target on the immediate left of source
+      movedBlockOriginLeft: procedures.blocks[targetIndexInYata]?.id,
+      movedBlockOriginRight: procedures.blocks[targetIndexInYata + 1]?.id
+    }
+
+  let priority = 0
+
+  const sourceElement = procedures.elements[sourceProcedureId]
+
+  if (sourceElement.type === elementType.value && sourceElement.movedTo !== undefined) {
+    const previousMovedToElement = procedures.elements[sourceElement.movedTo]
+
+    if (previousMovedToElement !== undefined && previousMovedToElement.type === elementType.moved) {
+      // if the element was previously moved, the new priority is the previous priority plus 1
+      priority = previousMovedToElement.priority + 1
+    }
+  }
+
+  const moveVersion = nextVersion(replicaId, version)
+  const moveSequence = sequence + 1
+  const movedBlockId = `${replicaId}.${moveSequence}` as const
+
+  const moveEvent = {
+    version: moveVersion,
+    origin: replicaId,
+    originSequence: moveSequence,
+    localSequence: moveSequence,
+    operation: {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation: {
+        type: operationType.updateElement,
+        id: jobId,
+        elementOperation: {
+          type: operationType.update,
+          key: 'procedures',
+          childOperation: {
+            type: operationType.moveElement,
+            fromId: sourceProcedureId,
+            priority,
+            movedBlockId,
+            movedBlockOriginLeft,
+            movedBlockOriginRight,
+          }
+        }
+      }
+    }
+  }
+
+  const newCrdt: FormData = applyEvent(moveEvent, crdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: moveSequence,
+    crdt: newCrdt,
+    version: moveVersion,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, moveEvent]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [moveEvent])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(moveSequence, [moveEvent])
 }

@@ -97,7 +97,7 @@ export function integrate(block: Block, array: Block[]) {
     const otherRight = findBlockIndexOf(array, other.originRight) ?? array.length
 
     if (otherLeft < left
-      || (otherLeft === left && otherRight === right && block.id < other.id)
+      || (otherLeft === left && otherRight === right && elementIdComparer(block.id, other.id) === -1)
     ) {
       break
     }
@@ -160,6 +160,8 @@ export function integrateMoved(block: Block, element: Element<unknown>, yata: Ya
   return yata
 }
 
+// indexInYata is the index of the block representing the position (moved block or value block)
+// block is the value block
 export function getActiveValueBlocks(yata: Yata<unknown>): { indexInYata: number, block: Block }[] {
   return yata.blocks.reduce((acc, block, index) => {
     const element = yata.elements[block.id]
@@ -175,9 +177,8 @@ export function getActiveValueBlocks(yata: Yata<unknown>): { indexInYata: number
         && fromElement.isDeleted !== true
         && fromElement.movedTo === block.id // the moved block matches the 'from' block's movedTo value
       ) {
-        const fromBlockIndex = yata.blocks.findIndex(b => b.id === element.from)
-        const fromBlock = yata.blocks[fromBlockIndex]
-        acc.push({ indexInYata: fromBlockIndex, block: fromBlock })
+        const fromBlock = yata.blocks.find(b => b.id === element.from)
+        acc.push({ indexInYata: index, block: fromBlock })
       }
     }
 

@@ -1,7 +1,8 @@
-import { memo, useEffect, useState, type Ref } from 'react'
+import { memo, useEffect, useMemo, useState, type Ref } from 'react'
 import { Popover } from '@base-ui/react/popover'
 import type { ElementId } from '@michaelyinopen/scheduler-common'
-import { useDraggable } from '@dnd-kit/core'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities';
 import { dragType, useDragAndDropStore } from '../../dragAndDrop'
 import { useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
@@ -11,13 +12,13 @@ import baseClasses from '../../components/base.module.css'
 import jobClasses from './Job.module.css'
 import classes from '../../Procedure/Procedure.module.css'
 
-type JobProcedureDraggableProps = {
+type JobProcedureDraggableProps = React.ComponentProps<'div'> & {
   ref: Ref<HTMLDivElement>
   jobId: ElementId
   procedureId: ElementId
 }
 
-const JobProcedureDraggable = memo(({ ref, jobId, procedureId, ...rest }: JobProcedureDraggableProps) => {
+const JobProcedureDraggable = memo(({ ref, jobId, procedureId, style, ...rest }: JobProcedureDraggableProps) => {
   const isScheduled = useAppStore(state => {
     return state.taskPositions[jobId]?.[procedureId] !== undefined
   })
@@ -60,6 +61,7 @@ const JobProcedureDraggable = memo(({ ref, jobId, procedureId, ...rest }: JobPro
           jobId={jobId}
           procedureId={procedureId}
           className={isScheduledClassName + isDraggingClassName}
+          style={style}
           {...rest}
         />
       </Popover.Trigger>
@@ -82,8 +84,8 @@ export type JobProcedureProps = {
   procedureId: ElementId
 }
 
-const JobProcedure = ({ jobId, procedureId }: JobProcedureProps) => {
-  const { attributes, listeners, setNodeRef } = useDraggable({
+const JobProcedure = memo(({ jobId, procedureId }: JobProcedureProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: `procedure-${procedureId}`,
     data: {
       type: dragType.procedure,
@@ -92,6 +94,13 @@ const JobProcedure = ({ jobId, procedureId }: JobProcedureProps) => {
     },
   })
   const { tabIndex, ...applicableAttributes } = attributes
+  const style = useMemo(
+    () => ({
+      transform: CSS.Transform.toString(transform),
+      transition,
+    }),
+    [transform, transition]
+  )
 
   return (
     <JobProcedureDraggable
@@ -100,9 +109,10 @@ const JobProcedure = ({ jobId, procedureId }: JobProcedureProps) => {
       procedureId={procedureId}
       {...applicableAttributes}
       {...listeners}
+      style={style}
     />
   )
-}
+})
 
 JobProcedureDraggable.displayName = 'JobProcedureDraggable'
 JobProcedure.displayName = 'JobProcedure'
