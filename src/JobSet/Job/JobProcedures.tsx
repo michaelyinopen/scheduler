@@ -49,7 +49,7 @@ export const JobProcedures = ({ jobId }: JobProceduresProps) => {
     insertProcedureAtTheEnd(jobId)
   }, [jobId])
 
-  const [isWrapping, setIsWrapping] = useState(false)
+  const [containerWidthPx, setContainerwidthPx] = useState(0)
 
   const { ref } = useResizeDetector({
     handleHeight: false,
@@ -57,13 +57,20 @@ export const JobProcedures = ({ jobId }: JobProceduresProps) => {
     refreshRate: throttleDelayMs,
     disableRerender: true,
     onResize: ({ width }: { width: number | null }) => {
-      const hasEnoughSpace = width && width + tolerance > totalProcessingTimeMs * timeToWidthMultiplier
-      setIsWrapping(!hasEnoughSpace)
+      if (width && (containerWidthPx > width + tolerance || containerWidthPx < width - tolerance)) {
+        setContainerwidthPx(width)
+      }
     },
   })
 
+  const sortStartegy = useMemo(() => {
+    const isWrapping = totalProcessingTimeMs * timeToWidthMultiplier > containerWidthPx + tolerance
+
+    return isWrapping ? rectSortingStrategy : horizontalListSortingStrategy
+  }, [containerWidthPx, totalProcessingTimeMs, timeToWidthMultiplier])
+
   return (
-    <SortableContext items={sortableItems} disabled={{ droppable: !isExpandMode }} strategy={isWrapping ? rectSortingStrategy : horizontalListSortingStrategy}>
+    <SortableContext items={sortableItems} disabled={{ droppable: !isExpandMode }} strategy={sortStartegy}>
       <ol ref={ref} className={'list--unstyled' + ' ' + classes.procedures}>
         {procedureIds === undefined || procedureIds.length === 0 && (
           <li key='empty-procedure' className={classes.emptyProcedureItem}>
