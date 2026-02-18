@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { useDroppable } from '@dnd-kit/core'
 import { Button } from '@base-ui/react'
@@ -9,6 +9,7 @@ import { Job } from './Job'
 import { PlusIcon } from '../components/PlusIcon'
 import baseClasses from '../components/base.module.css'
 import classes from './JobSet.module.css'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 const JobSet = memo(() => {
   const [hasLoadedReplicationState, jobIds, isExpandMode] = useAppStore(useShallow((state) => {
@@ -32,6 +33,11 @@ const JobSet = memo(() => {
     return state.taskDragItem !== undefined
   })
 
+  const sortableItems = useMemo(
+    () => jobIds?.map(jobId => `job-${jobId}`) ?? [],
+    [jobIds]
+  )
+
   if (!hasLoadedReplicationState) {
     return (
       <div className={classes.jobSetLoader}>
@@ -43,32 +49,34 @@ const JobSet = memo(() => {
   const jobSetCanDropClassName = canDrop && isOver ? ` ${classes.jobSetCanDrop}` : ''
 
   return (
-    <ol ref={setNodeRef} className={'list--unstyled' + ' ' + classes.jobSet + jobSetCanDropClassName}>
-      {jobIds === undefined || jobIds.length === 0 && (
-        <li key='empty-job' className={classes.emptyJobItem}>
-          No jobs
-        </li>
-      )}
-      {jobIds?.map(id => {
-        return (
-          <li key={id} className={classes.jobSetItem}>
-            <Job id={id} />
+    <SortableContext items={sortableItems} disabled={{ droppable: !isExpandMode }} strategy={verticalListSortingStrategy}>
+      <ol ref={setNodeRef} className={'list--unstyled' + ' ' + classes.jobSet + jobSetCanDropClassName}>
+        {jobIds === undefined || jobIds.length === 0 && (
+          <li key='empty-job' className={classes.emptyJobItem}>
+            No jobs
           </li>
-        )
-      })}
-      {isExpandMode && (
-        <li key='insert-job' className={classes.insertJobItem}>
-          <Button
-            onClick={insertJobAtTheEnd}
-            className={baseClasses.iconButton + ' ' + 'pointer'}
-            aria-label='Insert job'
-            title='Insert job'
-          >
-            <PlusIcon />
-          </Button>
-        </li>
-      )}
-    </ol>
+        )}
+        {jobIds?.map(id => {
+          return (
+            <li key={id} className={classes.jobSetItem}>
+              <Job id={id} />
+            </li>
+          )
+        })}
+        {isExpandMode && (
+          <li key='insert-job' className={classes.insertJobItem}>
+            <Button
+              onClick={insertJobAtTheEnd}
+              className={baseClasses.iconButton + ' ' + 'pointer'}
+              aria-label='Insert job'
+              title='Insert job'
+            >
+              <PlusIcon />
+            </Button>
+          </li>
+        )}
+      </ol>
+    </SortableContext>
   )
 })
 

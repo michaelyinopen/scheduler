@@ -1,5 +1,5 @@
 import type { ElementId } from '@michaelyinopen/scheduler-common'
-import type { ProcedureDragItem, TaskDragItem } from './dragTypes'
+import type { JobDragItem, ProcedureDragItem, TaskDragItem } from './dragTypes'
 import { useDragAndDropStore } from './useDragAndDropStore'
 import { taskPositionDataEquals, type TaskPositionData } from '../utils/taskStacking'
 
@@ -13,6 +13,7 @@ export function clearDragItems() {
   useDragAndDropStore.setState({
     taskDragItem: undefined,
     procedureDragItem: undefined,
+    jobDragItem: undefined,
     taskDropPreviewPosition: undefined,
     taskPlaceholderHeightLevel: undefined,
   })
@@ -61,5 +62,15 @@ export function setProcedureDragItem(value: ProcedureDragItem) {
   }
   useDragAndDropStore.setState({
     procedureDragItem: value,
+  })
+}
+
+export function setJobDragItem(value: JobDragItem) {
+  const previousValue = useDragAndDropStore.getState().jobDragItem
+  if (previousValue !== undefined && value !== undefined && previousValue.jobId === value.jobId) {
+    return
+  }
+  useDragAndDropStore.setState({
+    jobDragItem: value,
   })
 }

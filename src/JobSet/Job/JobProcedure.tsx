@@ -2,7 +2,7 @@ import { memo, useEffect, useMemo, useState, type Ref } from 'react'
 import { Popover } from '@base-ui/react/popover'
 import type { ElementId } from '@michaelyinopen/scheduler-common'
 import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities';
+import { CSS } from '@dnd-kit/utilities'
 import { dragType, useDragAndDropStore } from '../../dragAndDrop'
 import { useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'

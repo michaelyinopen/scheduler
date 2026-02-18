@@ -1,11 +1,14 @@
 import {
   clearDragItems,
   CustomDragOverlay,
+  isJobDragItem,
+  isJobDropData,
   isJobSetDropData,
   isMachineLaneDropData,
   isProcedureDragItem,
   isProcedureDropData,
   isTaskDragItem,
+  setJobDragItem,
   setProcedureDragItem,
   setTaskDragItem,
   setTaskDropPreviewPosition,
@@ -26,7 +29,7 @@ import {
 } from '@dnd-kit/core'
 import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common'
 import { roundToMinute } from './utils/time'
-import { moveProcedure, scheduledProcedure, useAppStore } from './store'
+import { moveJob, moveProcedure, scheduledProcedure, useAppStore } from './store'
 
 type CalculateScheduledTimeResult = {
   shouldUpdate: false
@@ -98,9 +101,15 @@ function onDragStart(event: DragStartEvent) {
 
   if (isTaskDragItem(data)) {
     setTaskDragItem(data)
+    return
   }
   if (isProcedureDragItem(data)) {
     setProcedureDragItem(data)
+    return
+  }
+  if (isJobDragItem(data)) {
+    setJobDragItem(data)
+    return
   }
 }
 
@@ -194,6 +203,13 @@ function handleDrop(
     && dragItem.procedureId !== dropData.procedureId
   ) {
     moveProcedure(dragItem.jobId, dragItem.procedureId, dropData.procedureId)
+    return
+  }
+
+  if (isJobDragItem(dragItem) && isJobDropData(dropData)
+    && dragItem.jobId !== dropData.jobId
+  ) {
+    moveJob(dragItem.jobId, dropData.jobId)
     return
   }
 }
