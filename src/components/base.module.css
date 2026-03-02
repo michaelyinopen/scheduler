@@ -198,3 +198,13 @@
   height: 1.5rem;
   fill: currentColor;
 }
+
+.drag-handle-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: var(--color-gray-600);
+}
+
+.drag-handle-icon__rect {
+  fill: var(--color-gray-100);
+}

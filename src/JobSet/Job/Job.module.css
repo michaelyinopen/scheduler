@@ -110,6 +110,12 @@ To vertically align the icon
   vertical-align: bottom;
 }
 
+.job-drag-handle {
+  display: block;
+  align-self: center;
+  cursor: move;
+}
+
 .job-header {
   display: flex;
   justify-content: space-between;

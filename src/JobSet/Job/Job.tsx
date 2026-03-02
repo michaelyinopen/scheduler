@@ -2,12 +2,14 @@ import { memo, useMemo, type Ref } from 'react'
 import type { ElementId } from '@michaelyinopen/scheduler-common'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { dragType } from '../../dragAndDrop'
+import { useAppStore } from '../../store'
 import { JobProcedures } from './JobProcedures'
 import { JobOption } from './JobOption'
 import { JobProgress } from './JobProgress'
 import { JobHeader } from './JobHeader'
+import { JobDragHandle } from './JobDragHandle'
 import classes from '../JobSet.module.css'
-import { dragType } from '../../dragAndDrop'
 
 export type JobDraggableProps = React.ComponentProps<'div'> & {
   id: ElementId,
@@ -15,11 +17,15 @@ export type JobDraggableProps = React.ComponentProps<'div'> & {
 }
 
 const JobDraggable = memo(({ id, ref, style, ...rest }: JobDraggableProps) => {
+  const isExpandMode = useAppStore(state => state.isExpandMode)
   return (
     <div ref={ref} className={classes.job} style={style} {...rest}>
       <JobOption id={id} />
       <JobProgress id={id} />
-      <JobHeader id={id} className={classes.jobSetJobHeader} puncuation=':' />
+      <div className={classes.jobSetJobHeader}>
+        {isExpandMode && <JobDragHandle />}
+        <JobHeader id={id} puncuation=':' />
+      </div>
       <JobProcedures jobId={id} />
     </div>
   )

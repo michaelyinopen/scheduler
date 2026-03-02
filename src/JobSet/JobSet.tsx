@@ -1,7 +1,8 @@
 import { memo, useMemo } from 'react'
 import { useShallow } from 'zustand/shallow'
-import { useDroppable } from '@dnd-kit/core'
 import { Button } from '@base-ui/react'
+import { useDroppable } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Spinner } from '../components/Spinner'
 import { dropType, useDragAndDropStore } from '../dragAndDrop'
 import { insertJobAtTheEnd, jobIdsSelector, useAppStore } from '../store'
@@ -9,7 +10,6 @@ import { Job } from './Job'
 import { PlusIcon } from '../components/PlusIcon'
 import baseClasses from '../components/base.module.css'
 import classes from './JobSet.module.css'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 const JobSet = memo(() => {
   const [hasLoadedReplicationState, jobIds, isExpandMode] = useAppStore(useShallow((state) => {
@@ -47,10 +47,11 @@ const JobSet = memo(() => {
   }
 
   const jobSetCanDropClassName = canDrop && isOver ? ` ${classes.jobSetCanDrop}` : ''
+  const jobSetExpandModeClassName = isExpandMode ? ` ${classes.jobSetExpandMode}` : ''
 
   return (
     <SortableContext items={sortableItems} disabled={{ droppable: !isExpandMode }} strategy={verticalListSortingStrategy}>
-      <ol ref={setNodeRef} className={'list--unstyled' + ' ' + classes.jobSet + jobSetCanDropClassName}>
+      <ol ref={setNodeRef} className={'list--unstyled' + ' ' + classes.jobSet + jobSetCanDropClassName + jobSetExpandModeClassName}>
         {jobIds === undefined || jobIds.length === 0 && (
           <li key='empty-job' className={classes.emptyJobItem}>
             No jobs
