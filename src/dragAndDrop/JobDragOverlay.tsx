@@ -15,7 +15,7 @@ const JobDragOverlay = memo(({ id }: JobProps) => {
       <div className={classes.jobDragOverlayProgress} />
       <div className={classes.jobDragOverlayJobHeader}>
         <JobDragHandle />
-        <JobHeader id={id} puncuation=':' />
+        <JobHeader id={id} />
       </div>
     </div>
   )
