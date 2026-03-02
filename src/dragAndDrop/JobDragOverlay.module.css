@@ -1,0 +1,28 @@
+/* needs to be similar to .job-set.job-set in ..\JobSet\Job\Job.module.css */
+.job-drag-overlay {
+  display: grid;
+  grid-template-columns: [option-start] auto [option-end progress-start] auto [progress-end job-header-start] auto [job-header-end procedures-start] 1fr [procedures-end];
+  gap: 0.5rem;
+  cursor: move;
+}
+
+/* needs to be the same as .job-progress-icon + padding + border*/
+.job-drag-overlay__option {
+  width: calc(1.5rem + 0.2rem + 1px);
+  outline: yellow;
+}
+
+/* needs to be the same as .option-icon + padding + border */
+.job-drag-overlay__progress {
+  width: calc(1.5rem + 0.2rem + 1px);
+  outline: red;
+}
+
+
+/* needs to be the same as .job-set__job-header */
+.job-drag-overlay__job-header {
+  grid-column: job-header-start / job-header-end;
+  margin: 0.25rem 0 0.25rem 0.5rem;
+  font-size: 1.17rem;
+  display: flex;
+}

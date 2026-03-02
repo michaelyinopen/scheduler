@@ -1,17 +1,15 @@
-import { memo, type Ref } from 'react'
+import { memo } from 'react'
 import { DragHandleIcon } from '../../components/DragHandleIcon'
 import baseClasses from '../../components/base.module.css'
 import jobClasses from './Job.module.css'
 
-export type JobDragHandleProps = React.ComponentProps<'svg'> & {
-  ref: Ref<HTMLElement>
-}
+export type JobDragHandleProps = React.ComponentProps<'svg'>
 
 const JobDragHandle = memo(({ ref, ...rest }: JobDragHandleProps) => {
   return (
     <DragHandleIcon
       className={baseClasses.dragHandleIcon + ' ' + jobClasses.jobDragHandle}
-      ref={ref as Ref<SVGSVGElement>}
+      ref={ref}
       {...rest}
     />
   )
