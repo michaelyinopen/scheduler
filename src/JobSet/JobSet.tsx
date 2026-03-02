@@ -50,7 +50,7 @@ const JobSet = memo(() => {
   const jobSetExpandModeClassName = isExpandMode ? ` ${classes.jobSetExpandMode}` : ''
 
   return (
-    <SortableContext items={sortableItems} disabled={{ droppable: !isExpandMode }} strategy={verticalListSortingStrategy}>
+    <SortableContext items={sortableItems} strategy={verticalListSortingStrategy}>
       <ol ref={setNodeRef} className={'list--unstyled' + ' ' + classes.jobSet + jobSetCanDropClassName + jobSetExpandModeClassName}>
         {jobIds === undefined || jobIds.length === 0 && (
           <li key='empty-job' className={classes.emptyJobItem}>

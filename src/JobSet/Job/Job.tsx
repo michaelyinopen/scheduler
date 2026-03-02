@@ -13,17 +13,19 @@ import classes from '../JobSet.module.css'
 
 export type JobDraggableProps = React.ComponentProps<'div'> & {
   id: ElementId,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLDivElement>,
+  activatorNodeRef: Ref<HTMLElement>,
+  isExpandMode: boolean,
+  listeners: any
 }
 
-const JobDraggable = memo(({ id, ref, style, ...rest }: JobDraggableProps) => {
-  const isExpandMode = useAppStore(state => state.isExpandMode)
+const JobDraggable = memo(({ id, ref, activatorNodeRef, isExpandMode, listeners, style, ...rest }: JobDraggableProps) => {
   return (
     <div ref={ref} className={classes.job} style={style} {...rest}>
       <JobOption id={id} />
       <JobProgress id={id} />
       <div className={classes.jobSetJobHeader}>
-        {isExpandMode && <JobDragHandle />}
+        {isExpandMode && <JobDragHandle ref={activatorNodeRef} {...listeners} />}
         <JobHeader id={id} puncuation=':' />
       </div>
       <JobProcedures jobId={id} />
@@ -36,12 +38,14 @@ export type JobProps = {
 }
 
 const Job = memo(({ id }: JobProps) => {
+  const isExpandMode = useAppStore(state => state.isExpandMode)
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition } = useSortable({
     id: `job-${id}`,
     data: {
       type: dragType.job,
       jobId: id,
     },
+    disabled: !isExpandMode,
   })
   const { tabIndex, ...applicableAttributes } = attributes
   const style = useMemo(
@@ -56,8 +60,10 @@ const Job = memo(({ id }: JobProps) => {
     <JobDraggable
       id={id}
       ref={setNodeRef}
+      activatorNodeRef={setActivatorNodeRef}
+      isExpandMode={isExpandMode}
       style={style}
-      {...listeners}
+      listeners={listeners}
       {...applicableAttributes}
     />
   )
