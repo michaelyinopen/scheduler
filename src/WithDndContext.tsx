@@ -15,6 +15,7 @@ import {
   useDragAndDropStore,
   type DragItem,
   type DropData,
+  collisionDetectionAlgorithm,
 } from './dragAndDrop'
 import {
   DndContext,
@@ -23,7 +24,6 @@ import {
   useSensors,
   type DragStartEvent,
   type DragEndEvent,
-  pointerWithin,
   type ClientRect,
   type DragMoveEvent,
 } from '@dnd-kit/core'
@@ -234,7 +234,7 @@ export const WithDndContext = ({ children }: WithDndContextProps) => {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={pointerWithin} // use custom for different drag and drop types
+      collisionDetection={collisionDetectionAlgorithm}
       onDragStart={onDragStart}
       onDragMove={onDragMove}
       onDragEnd={onDragEnd}

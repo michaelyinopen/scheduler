@@ -34,6 +34,7 @@
   grid-column: job-header-start / job-header-end;
   color: var(--color-gray-700);
   font-style: italic;
+  margin-bottom: 0.75rem;
 }
 
 .insert-job-item {
