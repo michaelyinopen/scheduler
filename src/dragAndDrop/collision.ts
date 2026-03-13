@@ -1,6 +1,6 @@
 import { closestCorners, pointerWithin, type CollisionDetection } from '@dnd-kit/core';
-import { isJobDragItem, isProcedureDragItem, type DragItem } from './dragTypes';
-import { isJobDropData, isProcedureDropData, type DropData } from './dropTypes';
+import { isJobDragItem, isProcedureDragItem, isTaskDragItem, type DragItem } from './dragTypes';
+import { isJobDropData, isJobSetDropData, isMachineLaneDropData, isProcedureDropData, type DropData } from './dropTypes';
 
 export const collisionDetectionAlgorithm: CollisionDetection = (args) => {
   const droppableContainers = args.droppableContainers
@@ -56,6 +56,22 @@ export const collisionDetectionAlgorithm: CollisionDetection = (args) => {
       if (otherJobs.length > 0) {
         return otherJobs
       }
+    }
+  }
+
+  if (isTaskDragItem(dragItem)) {
+    const collisions = pointerWithin({
+      ...args,
+      droppableContainers: droppableContainers.filter(({ data }) => {
+        const dropData = data.current as DropData | undefined
+
+        return dropData !== undefined &&
+          (isJobSetDropData(dropData) || isMachineLaneDropData(dropData))
+      }),
+    })
+
+    if (collisions.length > 0) {
+      return collisions
     }
   }
 
