@@ -1,4 +1,4 @@
-import { closestCorners, pointerWithin, type CollisionDetection } from '@dnd-kit/core';
+import { closestCenter, pointerWithin, type CollisionDetection } from '@dnd-kit/core';
 import { isJobDragItem, isProcedureDragItem, isTaskDragItem, type DragItem } from './dragTypes';
 import { isJobDropData, isJobSetDropData, isMachineLaneDropData, isProcedureDropData, type DropData } from './dropTypes';
 
@@ -22,7 +22,7 @@ export const collisionDetectionAlgorithm: CollisionDetection = (args) => {
     }).length > 0
 
     if (isPointerInJob) {
-      const otherProcedures = closestCorners({
+      const otherProcedures = closestCenter({
         ...args,
         droppableContainers: droppableContainers.filter(({ data }) => {
           const dropData = data.current as DropData | undefined
@@ -44,7 +44,7 @@ export const collisionDetectionAlgorithm: CollisionDetection = (args) => {
     }).length > 0
 
     if (isPointerInJobSet) {
-      const otherJobs = pointerWithin({
+      const otherJobs = closestCenter({
         ...args,
         droppableContainers: droppableContainers.filter(({ data }) => {
           const dropData = data.current as DropData | undefined
