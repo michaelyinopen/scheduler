@@ -3,7 +3,7 @@ import { Popover } from '@base-ui/react/popover'
 import type { ElementId } from '@michaelyinopen/scheduler-common'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { dragType, useDragAndDropStore } from '../../dragAndDrop'
+import { dragType, noneAnimateLayoutChanges, useDragAndDropStore } from '../../dragAndDrop'
 import { useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import { Procedure } from '../../Procedure'
@@ -82,9 +82,10 @@ const JobProcedureDraggable = memo(({ ref, jobId, procedureId, style, ...rest }:
 export type JobProcedureProps = {
   jobId: ElementId
   procedureId: ElementId
+  isWrapping: boolean
 }
 
-const JobProcedure = memo(({ jobId, procedureId }: JobProcedureProps) => {
+const JobProcedure = memo(({ jobId, procedureId, isWrapping }: JobProcedureProps) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: `procedure-${procedureId}`,
     data: {
@@ -92,6 +93,7 @@ const JobProcedure = memo(({ jobId, procedureId }: JobProcedureProps) => {
       jobId,
       procedureId,
     },
+    animateLayoutChanges: isWrapping ? noneAnimateLayoutChanges : undefined,
   })
   const { tabIndex, ...applicableAttributes } = attributes
   const style = useMemo(
