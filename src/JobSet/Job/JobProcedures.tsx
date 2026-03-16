@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { Button } from '@base-ui/react'
 import { useResizeDetector } from 'react-resize-detector'
@@ -6,7 +6,7 @@ import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortabl
 import { type ElementId, type JobValue, type ProcedureValue, type ValueElement } from '@michaelyinopen/scheduler-common'
 import { throttleDelayMs } from '../../constants'
 import { insertProcedureAtTheEnd, prodcedureIdsSelector, timeToWidthMultiplierSelector, useAppStore } from '../../store'
-import { noneSortingStrategy } from '../../dragAndDrop'
+import { noneSortingStrategy, setJobIsWrapping, useProcedureSortingStore } from '../../dragAndDrop'
 import { PlusIcon } from '../../components/PlusIcon'
 import { JobProcedure } from './JobProcedure'
 import baseClasses from '../../components/base.module.css'
@@ -64,9 +64,15 @@ export const JobProcedures = ({ jobId }: JobProceduresProps) => {
     },
   })
 
-  const isWrapping = useMemo(() => {
-    return totalProcessingTimeMs * timeToWidthMultiplier > containerWidthPx + tolerance
-  }, [containerWidthPx, totalProcessingTimeMs, timeToWidthMultiplier])
+  useEffect(
+    () => {
+      const isWrapping = totalProcessingTimeMs * timeToWidthMultiplier > containerWidthPx + tolerance
+      setJobIsWrapping(jobId, isWrapping)
+    },
+    [jobId, containerWidthPx, totalProcessingTimeMs, timeToWidthMultiplier]
+  )
+
+  const isWrapping = useProcedureSortingStore(state => state.jobIsWrappingMap[jobId] ?? false)
 
   return (
     <SortableContext

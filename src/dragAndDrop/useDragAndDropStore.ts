@@ -1,12 +1,12 @@
 import { create } from 'zustand'
-import type { JobDragItem, TaskDragItem } from './dragTypes'
+import type { JobDragItem, ProcedureDragItem, TaskDragItem } from './dragTypes'
 import type { TaskPositionData } from '../utils/taskStacking'
 import type { ElementId } from '@michaelyinopen/scheduler-common'
 
 export type DragAndDropState = {
   scheduleBodyClientLeftPx: number | undefined
   taskDragItem: TaskDragItem | undefined
-  procedureDragItem: TaskDragItem | undefined
+  procedureDragItem: ProcedureDragItem | undefined
   jobDragItem: JobDragItem | undefined
   taskDropPreviewPosition: TaskPositionData | undefined // endTimeMs could be affected when procedure's processing time changes
   taskPlaceholderHeightLevel: { // max height level of all tasks of the machine just before hovering

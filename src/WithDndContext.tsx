@@ -156,6 +156,15 @@ const onDragMove = (event: DragMoveEvent) => {
 
   // not dragging task or procedure over machine lane
   setTaskDropPreviewPosition(undefined)
+
+  // if (isProcedureDragItem(dragItem) && isProcedureDropData(dropData)
+  //   && dragItem.jobId === dropData.jobId
+  //   && dragItem.procedureId !== dropData.procedureId
+  // ) {
+    
+  //   moveProcedure(dragItem.jobId, dragItem.procedureId, dropData.procedureId)
+  //   return
+  // }
 }
 
 function onDragEnd(event: DragEndEvent) {
@@ -202,6 +211,7 @@ function handleDrop(
     && dragItem.jobId === dropData.jobId
     && dragItem.procedureId !== dropData.procedureId
   ) {
+    // check is job wrapping
     moveProcedure(dragItem.jobId, dragItem.procedureId, dropData.procedureId)
     return
   }
