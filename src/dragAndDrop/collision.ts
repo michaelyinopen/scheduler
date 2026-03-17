@@ -22,7 +22,7 @@ export const collisionDetectionAlgorithm: CollisionDetection = (args) => {
     }).length > 0
 
     if (isPointerInJob) {
-      const otherProcedures = closestCenter({
+      const otherProcedures = closestCenter({ // prioritize same horizontal
         ...args,
         droppableContainers: droppableContainers.filter(({ data }) => {
           const dropData = data.current as DropData | undefined

@@ -834,7 +834,15 @@ export function insertProcedureAtTheEnd(jobId: ElementId) {
   submitEvents(processingTimeMsSequence, [insertEvent, processingTimeMsEvent])
 }
 
-export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, targetProcedureId: ElementId) {
+export type MovedBlockOrigins = {
+  movedBlockOriginLeft: ElementId | undefined
+  movedBlockOriginRight: ElementId | undefined
+}
+
+export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, movedBlockOrigins?: MovedBlockOrigins) {
+  if (movedBlockOrigins === undefined) {
+    return
+  }
   const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
   const localEvents = useAppStore.getState().localEvents
   const job = crdt.jobs?.elements[jobId] as ValueElement<JobValue> | undefined
@@ -843,33 +851,6 @@ export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, ta
   if (procedures === undefined) {
     return
   }
-
-  const activeValueBlocks = getActiveValueBlocks(procedures)
-
-  const sourceIndexInActive = activeValueBlocks.findIndex(activeValueBlock => activeValueBlock.block.id === sourceProcedureId)
-  const targetIndexInActive = activeValueBlocks.findIndex(activeValueBlock => activeValueBlock.block.id === targetProcedureId)
-  if (sourceIndexInActive === -1 || targetIndexInActive === -1 || sourceIndexInActive === targetIndexInActive) {
-    return
-  }
-
-  const targetElement = procedures.elements[targetProcedureId]
-
-  if (targetElement.type !== elementType.value) {
-    return
-  }
-
-  const targetIndexInYata = activeValueBlocks[targetIndexInActive].indexInYata
-
-  const { movedBlockOriginLeft, movedBlockOriginRight } = sourceIndexInActive > targetIndexInActive
-    ? { // Originally, source is on the right side of target. After moving, target on the immediate right of source
-      movedBlockOriginLeft: procedures.blocks[targetIndexInYata - 1]?.id,
-      movedBlockOriginRight: procedures.blocks[targetIndexInYata]?.id
-    }
-    : { // Originally, source is on the left side of target. After moving, target on the immediate left of source
-      movedBlockOriginLeft: procedures.blocks[targetIndexInYata]?.id,
-      movedBlockOriginRight: procedures.blocks[targetIndexInYata + 1]?.id
-    }
-
   let priority = 0
 
   const sourceElement = procedures.elements[sourceProcedureId]
@@ -906,8 +887,8 @@ export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, ta
             fromId: sourceProcedureId,
             priority,
             movedBlockId,
-            movedBlockOriginLeft,
-            movedBlockOriginRight,
+            movedBlockOriginLeft: movedBlockOrigins.movedBlockOriginLeft,
+            movedBlockOriginRight: movedBlockOrigins.movedBlockOriginRight,
           }
         }
       }

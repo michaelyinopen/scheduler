@@ -195,4 +195,30 @@ To vertically align the icon
 
 .job-procedure {
   cursor: move;
+  position: relative;
+  --indicator-color: #a5c9fa;
+}
+
+.job-procedure__drop-preview-indicator-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-left: 4px solid var(--indicator-color);
+  transform-origin: left center;
+  transform: translateX(-2px) scale(1, 1.4);
+  z-index: 1;
+}
+
+.job-procedure__drop-preview-indicator-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-right: 4px solid var(--indicator-color);
+  transform-origin: right center;
+  transform: translateX(2px) scale(1, 1.4);
+  z-index: 1;
 }
