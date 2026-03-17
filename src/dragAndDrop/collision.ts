@@ -21,13 +21,21 @@ export const collisionDetectionAlgorithm: CollisionDetection = (args) => {
       })
     }).length > 0
 
-    if (isPointerInJob) {
-      const otherProcedures = closestCenter({ // prioritize same horizontal
+    const activeRect = args.active.rect.current.translated
+
+    if (isPointerInJob && activeRect !== null) {
+      const yCoordinateOfActiveCenter = activeRect.top + activeRect.height * 0.5
+      const otherProcedures = closestCenter({ // only include same job and same horizontal
         ...args,
-        droppableContainers: droppableContainers.filter(({ data }) => {
+        droppableContainers: droppableContainers.filter(({ data, rect }) => {
           const dropData = data.current as DropData | undefined
 
-          return dropData !== undefined && isProcedureDropData(dropData) && dropData.jobId === jobId
+          return dropData !== undefined
+            && isProcedureDropData(dropData)
+            && dropData.jobId === jobId
+            && rect.current !== null
+            && yCoordinateOfActiveCenter <= rect.current?.bottom
+            && yCoordinateOfActiveCenter > rect.current?.top
         }),
       })
 
