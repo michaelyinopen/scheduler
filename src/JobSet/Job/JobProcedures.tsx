@@ -89,7 +89,7 @@ export const JobProcedures = ({ jobId }: JobProceduresProps) => {
         {procedureIds?.map((id) => {
           return (
             <li key={id}>
-              <JobProcedure jobId={jobId} procedureId={id} isWrapping={isWrapping} />
+              <JobProcedure jobId={jobId} procedureId={id} isWrapping={isWrapping} isExpandMode={isExpandMode}/>
             </li>
           )
         })}
