@@ -2,8 +2,8 @@ import { memo, useEffect, useMemo, useState, type Ref } from 'react'
 import { Popover } from '@base-ui/react/popover'
 import type { ElementId } from '@michaelyinopen/scheduler-common'
 import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities';
-import { dragType, useDragAndDropStore } from '../../dragAndDrop'
+import { CSS } from '@dnd-kit/utilities'
+import { dragType, noneAnimateLayoutChanges, useDragAndDropStore, useProcedureSortingStore } from '../../dragAndDrop'
 import { useAppStore } from '../../store'
 import { ArrowSvg } from '../../components/ArrowSvg'
 import { Procedure } from '../../Procedure'
@@ -11,6 +11,11 @@ import { ProcedureDetail } from './ProcedureDetail'
 import baseClasses from '../../components/base.module.css'
 import jobClasses from './Job.module.css'
 import classes from '../../Procedure/Procedure.module.css'
+
+const dropPreviewIndicatorClassNameMap = {
+  left: jobClasses.jobProcedureDropPreviewIndicatorLeft,
+  right: jobClasses.jobProcedureDropPreviewIndicatorRight,
+}
 
 type JobProcedureDraggableProps = React.ComponentProps<'div'> & {
   ref: Ref<HTMLDivElement>
@@ -42,8 +47,15 @@ const JobProcedureDraggable = memo(({ ref, jobId, procedureId, style, ...rest }:
     }
   }, [jobId, procedureId, open])
 
+  const dropPreviewIndicator = useProcedureSortingStore(state => {
+    const indicator = state.procedureDropPreviewIndicator
+
+    return indicator?.procedureId === procedureId ? indicator.position : undefined
+  })
+
   const isScheduledClassName = isScheduled ? classes.procedureIsScheduled : ''
   const isDraggingClassName = isDragging ? ` ${classes.procedureIsDragItem}` : ''
+  const dropPreviewIndicatorClassName = dropPreviewIndicator !== undefined ? ` ${dropPreviewIndicatorClassNameMap[dropPreviewIndicator]}` : ''
 
   return (
     <Popover.Root
@@ -64,6 +76,7 @@ const JobProcedureDraggable = memo(({ ref, jobId, procedureId, style, ...rest }:
           style={style}
           {...rest}
         />
+        <div className={dropPreviewIndicatorClassName} />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={8} align='start'>
@@ -82,9 +95,11 @@ const JobProcedureDraggable = memo(({ ref, jobId, procedureId, style, ...rest }:
 export type JobProcedureProps = {
   jobId: ElementId
   procedureId: ElementId
+  isWrapping: boolean
+  isExpandMode: boolean
 }
 
-const JobProcedure = memo(({ jobId, procedureId }: JobProcedureProps) => {
+const JobProcedure = memo(({ jobId, procedureId, isWrapping, isExpandMode }: JobProcedureProps) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: `procedure-${procedureId}`,
     data: {
@@ -92,6 +107,10 @@ const JobProcedure = memo(({ jobId, procedureId }: JobProcedureProps) => {
       jobId,
       procedureId,
     },
+    disabled: {
+      droppable: !isExpandMode
+    },
+    animateLayoutChanges: isWrapping ? noneAnimateLayoutChanges : undefined,
   })
   const { tabIndex, ...applicableAttributes } = attributes
   const style = useMemo(

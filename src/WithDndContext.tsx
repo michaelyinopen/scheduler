@@ -1,17 +1,26 @@
 import {
   clearDragItems,
   CustomDragOverlay,
+  isJobDragItem,
+  isJobDropData,
   isJobSetDropData,
   isMachineLaneDropData,
   isProcedureDragItem,
   isProcedureDropData,
   isTaskDragItem,
+  setJobDragItem,
   setProcedureDragItem,
   setTaskDragItem,
   setTaskDropPreviewPosition,
-  useDragAndDropStore,
   type DragItem,
   type DropData,
+  collisionDetectionAlgorithm,
+  calculateMoveProcedure,
+  useProcedureSortingStore,
+  clearPocedureDropPreviewIndicator,
+  setPocedureDropPreviewIndicator,
+  calculateScheduledTime,
+  calcualtePosition,
 } from './dragAndDrop'
 import {
   DndContext,
@@ -20,75 +29,10 @@ import {
   useSensors,
   type DragStartEvent,
   type DragEndEvent,
-  pointerWithin,
   type ClientRect,
   type DragMoveEvent,
 } from '@dnd-kit/core'
-import type { ElementId, JobValue, ProcedureValue, ValueElement } from '@michaelyinopen/scheduler-common'
-import { roundToMinute } from './utils/time'
-import { moveProcedure, scheduledProcedure, useAppStore } from './store'
-
-type CalculateScheduledTimeResult = {
-  shouldUpdate: false
-} | {
-  shouldUpdate: true
-  startTimeMs: number
-  endTimeMs: number
-}
-
-function calculateScheduledTime(
-  jobId: ElementId,
-  procedureId: ElementId,
-  machineId: ElementId,
-  newRectLeftPx: number
-): CalculateScheduledTimeResult {
-  const appState = useAppStore.getState()
-  const job = (appState.replicationState?.crdt.jobs?.elements[jobId] as ValueElement<JobValue> | undefined)?.value
-  const procedure = (job?.procedures?.elements[procedureId] as ValueElement<ProcedureValue> | undefined)?.value
-  const procedureMachineId = procedure?.machineId?.value
-
-  if (machineId !== procedureMachineId) {
-    return { shouldUpdate: false }
-  }
-
-  const {
-    viewStartTimeMs,
-    viewEndTimeMs,
-    timeAxisWidthPx,
-    maxTimeMs,
-  } = appState
-  const { scheduleBodyClientLeftPx } = useDragAndDropStore.getState()
-  const processignTimsMs = procedure?.processingTimeMs?.value
-
-  if (timeAxisWidthPx === null
-    || timeAxisWidthPx === 0
-    || scheduleBodyClientLeftPx === undefined
-    || processignTimsMs === undefined
-  ) {
-    return { shouldUpdate: false }
-  }
-
-  const viewDurationMs = viewEndTimeMs - viewStartTimeMs
-  const widthToTimeMultiplier = viewDurationMs / timeAxisWidthPx
-  const maxStartTime = maxTimeMs - processignTimsMs
-
-  const scheduledPositionStartTime = viewStartTimeMs + (newRectLeftPx - scheduleBodyClientLeftPx) * widthToTimeMultiplier
-  const roundedStartTime = roundToMinute(scheduledPositionStartTime)
-  const startTimeMs = Math.max(0, Math.min(roundedStartTime, maxStartTime))
-  const endTimeMs = startTimeMs + processignTimsMs
-
-  const previosuStartTime = appState.replicationState?.crdt.scheduledProcedureStartTimes?.[jobId]?.[procedureId]?.value
-
-  if (startTimeMs === previosuStartTime) {
-    return { shouldUpdate: false }
-  }
-
-  return {
-    shouldUpdate: true,
-    startTimeMs,
-    endTimeMs,
-  }
-}
+import { moveJob, moveProcedure, scheduledProcedure } from './store'
 
 function onDragStart(event: DragStartEvent) {
   const data = event.active.data.current as DragItem | undefined
@@ -98,18 +42,30 @@ function onDragStart(event: DragStartEvent) {
 
   if (isTaskDragItem(data)) {
     setTaskDragItem(data)
+    return
   }
   if (isProcedureDragItem(data)) {
     setProcedureDragItem(data)
+    return
+  }
+  if (isJobDragItem(data)) {
+    setJobDragItem(data)
+    return
   }
 }
 
-const onDragMove = (event: DragMoveEvent) => {
+function onDragMove(event: DragMoveEvent) {
   const dragItem = event.active.data.current as DragItem | undefined
   const dropData = event.over?.data.current as DropData | undefined
 
   const translatedRect = event.active.rect.current.translated ?? undefined
+  const overRect = event.over?.rect
 
+  PreviewTaskDrop(dragItem, dropData, translatedRect)
+  PreviewProcedureDropIndicator(dragItem, dropData, translatedRect, overRect)
+}
+
+function PreviewTaskDrop(dragItem: DragItem | undefined, dropData: DropData | undefined, translatedRect: ClientRect | undefined) {
   if (dragItem === undefined || dropData === undefined || translatedRect === undefined) {
     setTaskDropPreviewPosition(undefined)
     return
@@ -127,7 +83,6 @@ const onDragMove = (event: DragMoveEvent) => {
       })
       return
     }
-    setTaskDropPreviewPosition(undefined)
   }
 
   if (isProcedureDragItem(dragItem) && isMachineLaneDropData(dropData)) {
@@ -142,11 +97,42 @@ const onDragMove = (event: DragMoveEvent) => {
       })
       return
     }
-    setTaskDropPreviewPosition(undefined)
   }
 
   // not dragging task or procedure over machine lane
   setTaskDropPreviewPosition(undefined)
+}
+
+function PreviewProcedureDropIndicator(
+  dragItem: DragItem | undefined,
+  dropData: DropData | undefined,
+  translatedRect: ClientRect | undefined,
+  overRect: ClientRect | undefined
+) {
+  if (dragItem === undefined || dropData === undefined || translatedRect === undefined || overRect === undefined) {
+    clearPocedureDropPreviewIndicator()
+    return
+  }
+
+  if (isProcedureDragItem(dragItem) && isProcedureDropData(dropData)
+    && dragItem.jobId === dropData.jobId
+    && dragItem.procedureId !== dropData.procedureId
+  ) {
+    const isJobWrapping = useProcedureSortingStore.getState().jobIsWrappingMap[dragItem.jobId] ?? false
+
+    if (isJobWrapping) {
+      const position = calcualtePosition(translatedRect, overRect)
+      const moveProcedureResult = calculateMoveProcedure(dragItem.jobId, dragItem.procedureId, dropData.procedureId, position)
+
+      if (moveProcedureResult !== undefined) {
+        setPocedureDropPreviewIndicator(dropData.procedureId, position)
+
+        return
+      }
+    }
+  }
+
+  clearPocedureDropPreviewIndicator()
 }
 
 function onDragEnd(event: DragEndEvent) {
@@ -154,17 +140,20 @@ function onDragEnd(event: DragEndEvent) {
   const dropData = event.over?.data.current as DropData | undefined
 
   const translatedRect = event.active.rect.current.translated ?? undefined
+  const overRect = event.over?.rect
 
-  handleDrop(dragItem, dropData, translatedRect)
+  handleDrop(dragItem, dropData, translatedRect, overRect)
   clearDragItems()
+  clearPocedureDropPreviewIndicator()
 }
 
 function handleDrop(
   dragItem: DragItem | undefined,
   dropData: DropData | undefined,
-  translatedRect: ClientRect | undefined
+  translatedRect: ClientRect | undefined,
+  overRect: ClientRect | undefined,
 ) {
-  if (dragItem === undefined || dropData === undefined || translatedRect === undefined) {
+  if (dragItem === undefined || dropData === undefined || translatedRect === undefined || overRect === undefined) {
     return
   }
 
@@ -193,13 +182,28 @@ function handleDrop(
     && dragItem.jobId === dropData.jobId
     && dragItem.procedureId !== dropData.procedureId
   ) {
-    moveProcedure(dragItem.jobId, dragItem.procedureId, dropData.procedureId)
+    const isJobWrapping = useProcedureSortingStore.getState().jobIsWrappingMap[dragItem.jobId] ?? false
+
+    const position = isJobWrapping
+      ? calcualtePosition(translatedRect, overRect)
+      : 'distant'
+
+    const moveProcedureResult = calculateMoveProcedure(dragItem.jobId, dragItem.procedureId, dropData.procedureId, position)
+    moveProcedure(dragItem.jobId, dragItem.procedureId, moveProcedureResult)
+    return
+  }
+
+  if (isJobDragItem(dragItem) && isJobDropData(dropData)
+    && dragItem.jobId !== dropData.jobId
+  ) {
+    moveJob(dragItem.jobId, dropData.jobId)
     return
   }
 }
 
 function onDragCancel() {
   clearDragItems()
+  clearPocedureDropPreviewIndicator()
 }
 
 export type WithDndContextProps = {
@@ -218,7 +222,7 @@ export const WithDndContext = ({ children }: WithDndContextProps) => {
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={pointerWithin} // use custom for different drag and drop types
+      collisionDetection={collisionDetectionAlgorithm}
       onDragStart={onDragStart}
       onDragMove={onDragMove}
       onDragEnd={onDragEnd}

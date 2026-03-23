@@ -834,7 +834,15 @@ export function insertProcedureAtTheEnd(jobId: ElementId) {
   submitEvents(processingTimeMsSequence, [insertEvent, processingTimeMsEvent])
 }
 
-export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, targetProcedureId: ElementId) {
+export type MovedBlockOrigins = {
+  movedBlockOriginLeft: ElementId | undefined
+  movedBlockOriginRight: ElementId | undefined
+}
+
+export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, movedBlockOrigins?: MovedBlockOrigins) {
+  if (movedBlockOrigins === undefined) {
+    return
+  }
   const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
   const localEvents = useAppStore.getState().localEvents
   const job = crdt.jobs?.elements[jobId] as ValueElement<JobValue> | undefined
@@ -843,33 +851,6 @@ export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, ta
   if (procedures === undefined) {
     return
   }
-
-  const activeValueBlocks = getActiveValueBlocks(procedures)
-
-  const sourceIndexInActive = activeValueBlocks.findIndex(activeValueBlock => activeValueBlock.block.id === sourceProcedureId)
-  const targetIndexInActive = activeValueBlocks.findIndex(activeValueBlock => activeValueBlock.block.id === targetProcedureId)
-  if (sourceIndexInActive === -1 || targetIndexInActive === -1 || sourceIndexInActive === targetIndexInActive) {
-    return
-  }
-
-  const targetElement = procedures.elements[targetProcedureId]
-
-  if (targetElement.type !== elementType.value) {
-    return
-  }
-
-  const targetIndexInYata = activeValueBlocks[targetIndexInActive].indexInYata
-
-  const { movedBlockOriginLeft, movedBlockOriginRight } = sourceIndexInActive > targetIndexInActive
-    ? { // Originally, source is on the right side of target. After moving, target on the immediate right of source
-      movedBlockOriginLeft: procedures.blocks[targetIndexInYata - 1]?.id,
-      movedBlockOriginRight: procedures.blocks[targetIndexInYata]?.id
-    }
-    : { // Originally, source is on the left side of target. After moving, target on the immediate left of source
-      movedBlockOriginLeft: procedures.blocks[targetIndexInYata]?.id,
-      movedBlockOriginRight: procedures.blocks[targetIndexInYata + 1]?.id
-    }
-
   let priority = 0
 
   const sourceElement = procedures.elements[sourceProcedureId]
@@ -906,10 +887,103 @@ export function moveProcedure(jobId: ElementId, sourceProcedureId: ElementId, ta
             fromId: sourceProcedureId,
             priority,
             movedBlockId,
-            movedBlockOriginLeft,
-            movedBlockOriginRight,
+            movedBlockOriginLeft: movedBlockOrigins.movedBlockOriginLeft,
+            movedBlockOriginRight: movedBlockOrigins.movedBlockOriginRight,
           }
         }
+      }
+    }
+  }
+
+  const newCrdt: FormData = applyEvent(moveEvent, crdt)
+
+  const newReplicationState = {
+    replicaId,
+    sequence: moveSequence,
+    crdt: newCrdt,
+    version: moveVersion,
+    observed: observed,
+  }
+  const newLocalEvents = [...localEvents, moveEvent]
+
+  const calculatedChanges = getCalculatedChanges(crdt, newCrdt, [moveEvent])
+
+  useAppStore.setState({
+    replicationState: newReplicationState,
+    localEvents: newLocalEvents,
+    ...calculatedChanges,
+  })
+
+  submitEvents(moveSequence, [moveEvent])
+}
+
+export function moveJob(sourceJobId: ElementId, targetJobId: ElementId) {
+  const { replicaId, sequence, version, crdt, observed } = useAppStore.getState().replicationState!
+  const localEvents = useAppStore.getState().localEvents
+  const jobs = crdt.jobs
+
+  if (jobs === undefined) {
+    return
+  }
+
+  const activeValueBlocks = getActiveValueBlocks(jobs)
+
+  const sourceIndexInActive = activeValueBlocks.findIndex(activeValueBlock => activeValueBlock.block.id === sourceJobId)
+  const targetIndexInActive = activeValueBlocks.findIndex(activeValueBlock => activeValueBlock.block.id === targetJobId)
+  if (sourceIndexInActive === -1 || targetIndexInActive === -1 || sourceIndexInActive === targetIndexInActive) {
+    return
+  }
+
+  const targetElement = jobs.elements[targetJobId]
+
+  if (targetElement.type !== elementType.value) {
+    return
+  }
+
+  const targetIndexInYata = activeValueBlocks[targetIndexInActive].indexInYata
+
+  const { movedBlockOriginLeft, movedBlockOriginRight } = sourceIndexInActive > targetIndexInActive
+    ? { // Originally, source is on the right side of target. After moving, target on the immediate right of source
+      movedBlockOriginLeft: jobs.blocks[targetIndexInYata - 1]?.id,
+      movedBlockOriginRight: jobs.blocks[targetIndexInYata]?.id
+    }
+    : { // Originally, source is on the left side of target. After moving, target on the immediate left of source
+      movedBlockOriginLeft: jobs.blocks[targetIndexInYata]?.id,
+      movedBlockOriginRight: jobs.blocks[targetIndexInYata + 1]?.id
+    }
+
+  let priority = 0
+
+  const sourceElement = jobs.elements[sourceJobId]
+
+  if (sourceElement.type === elementType.value && sourceElement.movedTo !== undefined) {
+    const previousMovedToElement = jobs.elements[sourceElement.movedTo]
+
+    if (previousMovedToElement !== undefined && previousMovedToElement.type === elementType.moved) {
+      // if the element was previously moved, the new priority is the previous priority plus 1
+      priority = previousMovedToElement.priority + 1
+    }
+  }
+
+  const moveVersion = nextVersion(replicaId, version)
+  const moveSequence = sequence + 1
+  const movedBlockId = `${replicaId}.${moveSequence}` as const
+
+  const moveEvent = {
+    version: moveVersion,
+    origin: replicaId,
+    originSequence: moveSequence,
+    localSequence: moveSequence,
+    operation: {
+      type: operationType.update,
+      key: 'jobs',
+      childOperation: {
+        type: operationType.moveElement,
+        fromId: sourceJobId,
+        priority,
+        movedBlockId,
+        movedBlockOriginLeft,
+        movedBlockOriginRight,
       }
     }
   }

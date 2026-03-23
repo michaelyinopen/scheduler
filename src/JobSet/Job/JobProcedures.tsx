@@ -1,11 +1,12 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { Button } from '@base-ui/react'
 import { useResizeDetector } from 'react-resize-detector'
-import { horizontalListSortingStrategy, rectSortingStrategy, SortableContext } from '@dnd-kit/sortable'
+import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 import { type ElementId, type JobValue, type ProcedureValue, type ValueElement } from '@michaelyinopen/scheduler-common'
 import { throttleDelayMs } from '../../constants'
 import { insertProcedureAtTheEnd, prodcedureIdsSelector, timeToWidthMultiplierSelector, useAppStore } from '../../store'
+import { noneSortingStrategy, setJobIsWrapping, useProcedureSortingStore } from '../../dragAndDrop'
 import { PlusIcon } from '../../components/PlusIcon'
 import { JobProcedure } from './JobProcedure'
 import baseClasses from '../../components/base.module.css'
@@ -63,14 +64,22 @@ export const JobProcedures = ({ jobId }: JobProceduresProps) => {
     },
   })
 
-  const sortStartegy = useMemo(() => {
-    const isWrapping = totalProcessingTimeMs * timeToWidthMultiplier > containerWidthPx + tolerance
+  useEffect(
+    () => {
+      const isWrapping = totalProcessingTimeMs * timeToWidthMultiplier > containerWidthPx + tolerance
+      setJobIsWrapping(jobId, isWrapping)
+    },
+    [jobId, containerWidthPx, totalProcessingTimeMs, timeToWidthMultiplier]
+  )
 
-    return isWrapping ? rectSortingStrategy : horizontalListSortingStrategy
-  }, [containerWidthPx, totalProcessingTimeMs, timeToWidthMultiplier])
+  const isWrapping = useProcedureSortingStore(state => state.jobIsWrappingMap[jobId] ?? false)
 
   return (
-    <SortableContext items={sortableItems} disabled={{ droppable: !isExpandMode }} strategy={sortStartegy}>
+    <SortableContext
+      items={sortableItems}
+      disabled={{ droppable: !isExpandMode }}
+      strategy={isWrapping ? noneSortingStrategy : horizontalListSortingStrategy}
+    >
       <ol ref={ref} className={'list--unstyled' + ' ' + classes.procedures}>
         {procedureIds === undefined || procedureIds.length === 0 && (
           <li key='empty-procedure' className={classes.emptyProcedureItem}>
@@ -80,7 +89,7 @@ export const JobProcedures = ({ jobId }: JobProceduresProps) => {
         {procedureIds?.map((id) => {
           return (
             <li key={id}>
-              <JobProcedure jobId={jobId} procedureId={id} />
+              <JobProcedure jobId={jobId} procedureId={id} isWrapping={isWrapping} isExpandMode={isExpandMode}/>
             </li>
           )
         })}

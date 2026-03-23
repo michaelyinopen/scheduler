@@ -21,10 +21,10 @@ const viewDurationMemo = memoizeOne((viewStartTimeMs: number, viewEndTimeMs: num
 
   if (previousViewDuration !== null
     && viewDuration !== null
-    && viewDuration > viewDuration - tolerance
-    && viewDuration < viewDuration + tolerance
+    && viewDuration > previousViewDuration - tolerance
+    && viewDuration < previousViewDuration + tolerance
   ) {
-    return viewDuration
+    return previousViewDuration
   }
 
   previousViewDuration = viewDuration

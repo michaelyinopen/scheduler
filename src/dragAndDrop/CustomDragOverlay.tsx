@@ -4,12 +4,14 @@ import { useDragAndDropStore } from './useDragAndDropStore'
 import { Procedure } from '../Procedure'
 import procedureClasses from '../Procedure/Procedure.module.css'
 import { useShallow } from 'zustand/shallow'
+import { JobDragOverlay } from './JobDragOverlay'
 
 export const CustomDragOverlay = () => {
-  const { taskDragItem, procedureDragItem } = useDragAndDropStore(useShallow(state => {
+  const { taskDragItem, procedureDragItem, jobDragItem } = useDragAndDropStore(useShallow(state => {
     return {
       taskDragItem: state.taskDragItem,
       procedureDragItem: state.procedureDragItem,
+      jobDragItem: state.jobDragItem,
     }
   }))
 
@@ -27,6 +29,10 @@ export const CustomDragOverlay = () => {
           jobId={procedureDragItem.jobId}
           procedureId={procedureDragItem.procedureId}
           className={procedureClasses.procedureIsDragPreview}
+        />)}
+        {jobDragItem && (<JobDragOverlay
+          key={`job-${jobDragItem.jobId}`}
+          id={jobDragItem.jobId}
         />)}
       </DragOverlay>
     ),
