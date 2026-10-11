@@ -11,6 +11,7 @@
   background-color: var(--color-gray-100);
   color: var(--color-gray-900);
   user-select: none;
+  -webkit-user-select: none;
 
   @media (hover: hover) {
     &:hover {
@@ -203,6 +204,9 @@
   width: 1.5rem;
   height: 1.5rem;
   fill: var(--color-gray-600);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .drag-handle-icon__rect {

@@ -36,10 +36,11 @@ export function useConnection({ getWebSocket, setWebSocket, onConnectionOpen, on
 
   useEffect(() => {
     // foreground tab of a non-minimized window
+    const controller = new AbortController()
+    
     let isVisible = document.visibilityState === 'visible'
     const getIsVisible = () => isVisible
 
-    const controller = new AbortController()
     const retrier = createRetrier(getIsVisible)
 
     const connect = () => {

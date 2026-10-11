@@ -66,6 +66,7 @@
   cursor: text;
   top: 1.25rem;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .label,
@@ -238,6 +239,7 @@
   outline: 0;
   cursor: default;
   user-select: none;
+  -webkit-user-select: none;
   padding-block: 0.5rem;
   padding-left: 1rem;
   padding-right: 2rem;
