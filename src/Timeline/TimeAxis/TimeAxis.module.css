@@ -20,6 +20,7 @@
   fill: var(--color-gray-950);
   overflow: visible;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .tick-mark {

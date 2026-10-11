@@ -47,6 +47,7 @@ To vertically align the icon
   background-color: transparent;
   color: currentColor;
   user-select: none;
+  -webkit-user-select: none;
 
   @media (hover: hover) {
     &:hover {
@@ -111,8 +112,7 @@ To vertically align the icon
 }
 
 .job-drag-handle {
-  display: block;
-  align-self: center;
+  display: flex;
   cursor: move;
 }
 

@@ -73,9 +73,9 @@
   border-radius: 0.5rem;
   padding: 0.25rem 0.5rem;
   user-select: none;
+  -webkit-user-select: none;
   background-color: var(--color-gray-100);
   color: var(--color-gray-900);
-  user-select: none;
 
   @media (hover: hover) {
     &:hover {

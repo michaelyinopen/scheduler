@@ -23,6 +23,7 @@
   background-color: transparent;
   color: var(--color-gray-600);
   user-select: none;
+  -webkit-user-select: none;
 
   &:focus-visible {
     background-color: transparent;

@@ -7,11 +7,13 @@ export type JobDragHandleProps = React.ComponentProps<'svg'>
 
 const JobDragHandle = memo(({ ref, ...rest }: JobDragHandleProps) => {
   return (
-    <DragHandleIcon
-      className={baseClasses.dragHandleIcon + ' ' + jobClasses.jobDragHandle}
-      ref={ref}
-      {...rest}
-    />
+    <div className={jobClasses.jobDragHandle} tabIndex={0}>
+      <DragHandleIcon
+        className={baseClasses.dragHandleIcon}
+        ref={ref}
+        {...rest}
+      />
+    </div>
   )
 })
 

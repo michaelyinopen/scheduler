@@ -1,6 +1,7 @@
 .status-banner {
   position: absolute;
   user-select: none;
+  -webkit-user-select: none;
   pointer-events: none;
   top: 8px;
   right: 16px;
